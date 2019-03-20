@@ -1,8 +1,91 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
-    "variables": {},
-    "resources": [],
+    "parameters": {
+        "botAppId": {
+            "type": "string", 
+            "metadata": {
+                "description": "This is the Bot Framework Application ID"
+            }
+        }, 
+        "botDisplayName": {
+            "type":"string", 
+            "metadata": {
+                "description": "This is the name of your application"
+            }
+        }, 
+        "botDescription": {
+            "type":"string", 
+            "metadata": {
+                "description":"Give your application a description"
+            }
+        },
+        "iconUrl": {
+            "type":"string", 
+            "metadata": {
+                "description": "Please provide an icon that would resolve to a .PNG file"
+            }
+        }
+    },
+    "variables": {
+        "botName": "[concat('stickers-', uniqueString(resourceGroup().id))]",
+        "stickerAppInsightsName": "appInsightStickers",
+        "azfuncStorageAccountName":"[concat(uniqueString(resourceGroup().id), 'azfunctions')]"
+    },
+    "resources": [
+        {
+            "name":"[variables('botName')]",
+            "type": "Microsoft.BotService/botServices",
+            "location": "global",
+            "apiVersion": "2018-07-12",
+            "tags": {},
+            "sku": {
+                "name": "F0"
+            }, 
+            "kind": "sdk", 
+            "properties": {
+                "displayName":"[parameters('botDisplayName')]",
+                "description":"[parameters('botDescription')]",
+                "endpoint": "[concat('https://', variables('botName'), '.azurewebsites.net/api/messages')]",
+                "iconUrl": "[parameters('iconUrl')]",
+                "msaAppId":"[parameters('botAppId')]"
+            },
+            "resources": [
+                {
+                    "name": "[concat(variables('botName'), '/MsTeamsChannel')]", 
+                    "type": "Microsoft.BotService/botServices/channels", 
+                    "apiVersion": "2018-07-12",
+                    "location": "global",
+                    "tags": {}, 
+                    "sku": {
+                        "name":"F0"
+                    }, 
+                    "properties": {
+                        "channelName":"MsTeamsChannel",
+                        "location":"global", 
+                        "properties": {
+                            "isEnabled":true
+                        }
+                    }, 
+                    "dependsOn": [
+                        "[concat('Microsoft.BotService/botServices/', variables('botName'))]"
+                    ]
+                }
+            ]
+        }, 
+        {
+            "type": "Microsoft.Web/serverfarms", 
+            "apiVersion": "2018-02-01", 
+            "location":"[resourceGroup().location]", 
+            "name": "stickerAzHostingPlan", 
+            "sku": {
+                "name":"S1", 
+                "capacity": "0"
+            }, 
+            "properties": {
+                "name": "stickerAzHostingPlan"
+            }
+        }
+    ],
     "outputs": {}
 }
