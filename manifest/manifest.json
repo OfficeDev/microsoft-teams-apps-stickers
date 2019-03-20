@@ -1,0 +1,52 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.3/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.3",
+    "version": "1.0.0",
+    "id": "f1bc95ac-b991-4cd0-9ce5-7e4a70f4339b",
+    "packageName": "com.microsoft.teams.stickers",
+    "developer": {
+        "name": "Microsoft Corp.",
+        "websiteUrl": "https://aka.ms/msteamsdevcenter",
+        "privacyUrl": "https://go.microsoft.com/fwlink/?LinkId=512132",
+        "termsOfUseUrl": "https://aka.ms/st1pbotttermsofservice"
+    },
+    "icons": {
+        "color": "color.png",
+        "outline": "outline.png"
+    },
+    "name": {
+        "short": "Stickers!",
+        "full": "Stickers!"
+    },
+    "description": {
+        "short": "The awesome Stickers app enhances messaging in Microsoft Teams!",
+        "full": "The awesome Stickers app comes to enhance your Microsoft Teams messaging experience with a new and amazing palette of stickers!"
+    },
+    "accentColor": "#FFFFFF",
+    "composeExtensions": [
+        {
+            "botId": "<Insert bot Id>",
+            "canUpdateConfiguration": false,
+            "commands": [
+                {
+                    "id": "Search",
+                    "title": "Search",
+                    "description": "",
+                    "initialRun": true,
+                    "parameters": [
+                        {
+                            "name": "keyword",
+                            "title": "keyword",
+                            "description": "search for a sticker"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": []
+}
