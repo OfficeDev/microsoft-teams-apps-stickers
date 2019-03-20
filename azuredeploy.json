@@ -85,6 +85,16 @@
             "properties": {
                 "name": "stickerAzHostingPlan"
             }
+        },
+        {
+            "type":"Microsoft.Storage/storageAccounts",
+            "apiVersion": "2016-12-01", 
+            "name": "[variables('azfuncStorageAccountName')]", 
+            "location": "[resourceGroup().location]", 
+            "kind": "Storage", 
+            "sku": {
+                "name": "Standard_LRS"
+            }
         }
     ],
     "outputs": {}
