@@ -25,12 +25,32 @@
             "metadata": {
                 "description": "Please provide an icon that would resolve to a .PNG file"
             }
+        },
+        "repoUrl": {
+            "type": "string", 
+            "metadata": {
+                "description": "Please provide a GitHub link for the deployment of the code"
+            }
+        }, 
+        "branchName": {
+            "type": "string", 
+            "metadata": {
+                "description": "Please provide the exact branch of the GitHub repository"
+            }, 
+            "defaultValue": "master"
+        }, 
+        "configUri": {
+            "type":"string", 
+            "metadata": {
+                "description": "Provide a location for your asset definitions"
+            }
         }
     },
     "variables": {
         "botName": "[concat('stickers-', uniqueString(resourceGroup().id))]",
         "stickerAppInsightsName": "appInsightStickers",
-        "azfuncStorageAccountName":"[concat(uniqueString(resourceGroup().id), 'azfunctions')]"
+        "azfuncStorageAccountName":"[concat(uniqueString(resourceGroup().id), 'azfunctions')]",
+        "stickersFunctionAppName": "[concat('stickersFnApp-', uniqueString(resourceGroup().id))]"
     },
     "resources": [
         {
@@ -48,7 +68,8 @@
                 "description":"[parameters('botDescription')]",
                 "endpoint": "[concat('https://', variables('botName'), '.azurewebsites.net/api/messages')]",
                 "iconUrl": "[parameters('iconUrl')]",
-                "msaAppId":"[parameters('botAppId')]"
+                "msaAppId":"[parameters('botAppId')]", 
+                "developerAppInsightKey": "[reference(resourceId('Microsoft.Insights/components', variables('stickerAppInsightsName')), '2015-05-01').InstrumentationKey]"
             },
             "resources": [
                 {
@@ -95,6 +116,52 @@
             "sku": {
                 "name": "Standard_LRS"
             }
+        },
+        {
+            "type": "Microsoft.Web/sites", 
+            "apiVersion": "2015-08-01", 
+            "name": "[variables('stickersFunctionAppName')]", 
+            "location": "[resourceGroup().location]", 
+            "kind":"functionapp", 
+            "dependsOn": [
+                "[concat('Microsoft.Web/serverfarms/', 'stickerAzHostingPlan')]", 
+                "[concat('Microsoft.Storage/storageAccounts/', variables('azfuncStorageAccountName'))]"
+            ], 
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', 'stickerAzHostingPlan')]", 
+                "reserved": false, 
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name":"MicrosoftAppId", 
+                            "value":"[parameters('botAppId')]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY", 
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('stickerAppInsightsName')), '2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                            "name":"ConfigUri", 
+                            "value":"[parameters('configUri')]"
+                        }
+                    ]
+                }
+            }, 
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01", 
+                    "name":"web", 
+                    "type": "sourcecontrols", 
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', variables('stickersFunctionAppName'))]"
+                    ], 
+                    "properties": {
+                        "RepoUrl": "[parameters('repoUrl')]", 
+                        "branch": "[parameters('branchName')]", 
+                        "isManualIntegration": true
+                    }
+                }
+            ]
         }
     ],
     "outputs": {}
