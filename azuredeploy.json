@@ -119,15 +119,35 @@
         },
         {
             "type": "Microsoft.Web/sites", 
-            "apiVersion": "2015-08-01", 
+            "apiVersion": "2016-08-01", 
             "name": "[variables('stickersFunctionAppName')]", 
             "location": "[resourceGroup().location]", 
-            "kind":"functionapp", 
+            "kind":"functionapp",
+            "scale":null,  
             "dependsOn": [
                 "[concat('Microsoft.Web/serverfarms/', 'stickerAzHostingPlan')]", 
                 "[concat('Microsoft.Storage/storageAccounts/', variables('azfuncStorageAccountName'))]"
             ], 
             "properties": {
+                "enabled":true,
+                "hostNameSslStates": [
+                    {
+                        "name": "[concat(variables('botName'),'.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "virtualIP": null,
+                        "thumbprint": null,
+                        "toUpdate": null,
+                        "hostType": "Standard"
+                    },
+                    {
+                        "name": "[concat(variables('botName'),'.scm.azurewebsites.net')]",
+                        "sslState": "Disabled",
+                        "virtualIP": null,
+                        "thumbprint": null,
+                        "toUpdate": null,
+                        "hostType": "Repository"
+                    }
+                ],
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', 'stickerAzHostingPlan')]", 
                 "reserved": false, 
                 "siteConfig": {
@@ -162,7 +182,36 @@
                     }
                 }
             ]
+        },
+        {
+            "name":"[variables('stickerAppInsightsName')]", 
+            "type":"Microsoft.Insights/components", 
+            "kind": "other", 
+            "apiVersion": "2015-05-01", 
+            "location":"[resourceGroup().location]", 
+            "tags": {}, 
+            "scale": null, 
+            "properties": {
+                "Application_Type": "other"
+            }, 
+            "dependsOn": [
+                "[concat('Microsoft.BotService/botServices/', variables('botName'))]", 
+                "[concat('Microsoft.Web/sites/'"
+            ]
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "outputMsgExtensionName": {
+            "type":"string", 
+            "value": "[variables('botName')]"
+        }, 
+        "outputMsAppId": {
+            "type":"string", 
+            "value":"[parameters('botAppId')]"
+        }, 
+        "outputMsgExtensionDescription": {
+            "type":"string", 
+            "value":"[parameters('botDescription')]"
+        }
+    }
 }
