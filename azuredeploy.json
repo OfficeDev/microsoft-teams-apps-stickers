@@ -194,10 +194,7 @@
             "properties": {
                 "Application_Type": "other"
             }, 
-            "dependsOn": [
-                "[concat('Microsoft.BotService/botServices/', variables('botName'))]", 
-                "[concat('Microsoft.Web/sites/', variables('stickersFunctionAppName'))]"
-            ]
+            "dependsOn": []
         }
     ],
     "outputs": {
