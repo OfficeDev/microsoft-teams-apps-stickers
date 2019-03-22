@@ -50,7 +50,9 @@
         "botName": "[concat('stickers-', uniqueString(resourceGroup().id))]",
         "stickerAppInsightsName": "appInsightStickers",
         "azfuncStorageAccountName":"[concat(uniqueString(resourceGroup().id), 'azfunctions')]",
-        "stickersFunctionAppName": "[concat('stickersFnApp-', uniqueString(resourceGroup().id))]"
+        "stickersFunctionAppName": "[concat('stickersFnApp-', uniqueString(resourceGroup().id))]",
+        "stickersAssetBlobName": "[concat('stickersBlob-', uniqueString(resourceGroup().id))]",
+        "stickersBlobContainer": "stickersAssets"
     },
     "resources": [
         {
@@ -195,6 +197,16 @@
                 "Application_Type": "other"
             }, 
             "dependsOn": []
+        },
+        {
+            "name": "[variables('stickersAssetBlobName')]", 
+            "type": "Microsoft.Storage/storageAccounts", 
+            "apiVersion": "2018-07-01", 
+            "location": "[resourceGroup().location]", 
+            "kind": "BlobStorage",
+            "sku": {
+                "name": "Standard_LRS"
+            }
         }
     ],
     "outputs": {
