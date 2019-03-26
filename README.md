@@ -16,5 +16,3 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcoderkrishna%2Fmicrosoft-teams-stickers-template%2Fmaster%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-
-https://jollibeassets.blob.core.windows.net/assets/images/APPROVED.jpg
