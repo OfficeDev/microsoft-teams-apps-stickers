@@ -4,7 +4,8 @@
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>D:\Projects\StickersTemplate\StickersTemplate\StickersTemplate.xml</DocumentationFile>
+    <DocumentationFile>bin\StickersTemplate.xml</DocumentationFile>
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>D:\Projects\StickersTemplate\StickersTemplate\StickersTemplate.xml</DocumentationFile>

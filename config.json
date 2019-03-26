@@ -1,0 +1,50 @@
+{
+  "images": [
+    {
+      "name": "I approve that!",
+      "keywords": [
+        "stickers",
+        "eyes",
+        "approve",
+        "thumbs up"
+      ],
+      "imageUri": "https://jollibeassets.blob.core.windows.net/assets/images/APPROVED.jpg"
+    },
+    {
+      "name": "Relax!",
+      "keywords": [
+        "stickers",
+        "chill",
+        "calm down",
+        "relax",
+        "are",
+        "you",
+        "okay?"
+      ],
+      "imageUri": "https://jollibeassets.blob.core.windows.net/assets/images/RELAX.jpg"
+    },
+    {
+      "name": "Thanks",
+      "keywords": [
+        "stickers",
+        "appreciate",
+        "thank",
+        "you",
+        "gratitude"
+      ],
+      "imageUri": "https://jollibeassets.blob.core.windows.net/assets/images/THANKS.jpg"
+    },
+    {
+      "name": "LOL",
+      "keywords": [
+        "laugh out loud",
+        "haha",
+        "laugh",
+        "funny",
+        "humor",
+        "fun"
+      ],
+      "imageUri": "https://jollibeassets.blob.core.windows.net/assets/images/LOL.jpg"
+    }
+  ]
+}
