@@ -45,7 +45,7 @@ namespace StickersTemplate.Config
         public string MicrosoftAppId => this.StringValue("MicrosoftAppId");
 
         /// <inheritdoc/>
-        public Uri ConfigUri => this.UriValue("ConfigUri", true);
+        public Uri ConfigUri => this.UriValue("ConfigUri");
 
         /// <summary>
         /// Parses a config value into a <see cref="string"/>.
