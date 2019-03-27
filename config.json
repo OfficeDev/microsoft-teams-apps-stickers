@@ -1,7 +1,7 @@
 {
   "images": [
     {
-      "name": "I approve that!",
+      "name": "Approve",
       "keywords": [
         "stickers",
         "eyes",
@@ -45,6 +45,26 @@
         "fun"
       ],
       "imageUri": "https://jollibeassets.blob.core.windows.net/assets/images/LOL.jpg"
+    },
+    {
+      "name": "WelcomeBack", 
+      "keywords": [
+        "stickers", 
+        "welcome", 
+        "return", 
+        "back to work"
+      ], 
+      "imageUri":"https://jollibeassets.blob.core.windows.net/assets/images/WELCOME-BACK.jpg"
+    },
+    {
+      "name":"SquadGoals", 
+      "keywords":[
+        "team", 
+        "stickers", 
+        "squad", 
+        "best folks"
+      ], 
+      "imageUri":"https://jollibeassets.blob.core.windows.net/assets/images/SQUAD-GOALS.jpg"
     }
   ]
 }
