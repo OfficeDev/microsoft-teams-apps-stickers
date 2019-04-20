@@ -4,10 +4,10 @@
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>D:\Projects\StickersTemplate\StickersTemplate\StickersTemplate.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\StickersTemplate.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>D:\Projects\StickersTemplate\StickersTemplate\StickersTemplate.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\StickersTemplate.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="stylecop.json" />
