@@ -53,7 +53,7 @@ namespace StickersTemplate.Configuration.Controllers
             if (this.Request.IsAuthenticated)
             {
                 // Redirect to home page if the user is authenticated.
-                return this.RedirectToAction("Index", "Home");
+                return this.RedirectToAction("Index", "Stickers");
             }
 
             return this.View();
