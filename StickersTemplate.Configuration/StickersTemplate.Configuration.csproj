@@ -225,7 +225,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Account\SignOutCallback.cshtml" />
     <AdditionalFiles Include="stylecop.json" />
-    <Content Include="Views\Account\InvalidUserCallback.cshtml" />
+    <Content Include="Views\Account\InvalidUser.cshtml" />
     <Content Include="Views\Stickers\Create.cshtml" />
     <Content Include="Views\Stickers\Delete.cshtml" />
     <Content Include="Views\Stickers\Edit.cshtml" />

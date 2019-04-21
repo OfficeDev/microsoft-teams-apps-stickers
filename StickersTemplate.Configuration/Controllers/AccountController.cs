@@ -62,22 +62,10 @@ namespace StickersTemplate.Configuration.Controllers
         /// <summary>
         /// Invalid User
         /// </summary>
-        public void InvalidUser()
-        {
-            string callbackUrl = this.Url.Action("InvalidUserCallback", "Account", routeValues: null, protocol: this.Request.Url.Scheme);
-
-            this.HttpContext.GetOwinContext().Authentication.SignOut(
-                new AuthenticationProperties { RedirectUri = callbackUrl },
-                OpenIdConnectAuthenticationDefaults.AuthenticationType,
-                CookieAuthenticationDefaults.AuthenticationType);
-        }
-
-        /// <summary>
-        /// Invalid User Callback
-        /// </summary>
         /// <returns>Action Result</returns>
-        public ActionResult InvalidUserCallback()
+        public ActionResult InvalidUser()
         {
+            this.HttpContext.GetOwinContext().Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
             return this.View();
         }
     }

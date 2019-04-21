@@ -12,6 +12,7 @@ namespace StickersTemplate.Configuration
     using System.Linq;
     using System.Threading.Tasks;
     using System.Web.Helpers;
+    using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.Owin.Security;
     using Microsoft.Owin.Security.Cookies;
     using Microsoft.Owin.Security.OpenIdConnect;
@@ -61,14 +62,22 @@ namespace StickersTemplate.Configuration
                                 throw new Exception("User is not in allowedUpn list.");
                             }
 
-                            return Task.FromResult(0);
+                            return Task.CompletedTask;
                         },
                         AuthenticationFailed = (context) =>
                         {
                             // Pass in the context back to the app
                             context.OwinContext.Response.Redirect("/Account/InvalidUser");
                             context.HandleResponse(); // Suppress the exception
-                            return Task.FromResult(0);
+                            return Task.CompletedTask;
+                        },
+                        RedirectToIdentityProvider = (context) =>
+                        {
+                            if (context.ProtocolMessage.RequestType == OpenIdConnectRequestType.Authentication)
+                            {
+                                context.ProtocolMessage.Prompt = OpenIdConnectPrompt.Login;
+                            }
+                            return Task.CompletedTask;
                         }
                     }
                 });
