@@ -11,6 +11,7 @@ namespace StickersTemplate.Configuration
     using System.IdentityModel.Claims;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Web.Helpers;
     using Microsoft.Owin.Security;
     using Microsoft.Owin.Security.Cookies;
     using Microsoft.Owin.Security.OpenIdConnect;
@@ -71,6 +72,8 @@ namespace StickersTemplate.Configuration
                         }
                     }
                 });
+
+            AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Upn;
         }
 
         private static string EnsureTrailingSlash(string value)
