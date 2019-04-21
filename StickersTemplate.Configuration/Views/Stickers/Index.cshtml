@@ -1,0 +1,81 @@
+﻿@model IEnumerable<StickersTemplate.Configuration.Models.StickerViewModel>
+
+@{
+    ViewBag.Title = "Home";
+}
+
+<h2>Stickers</h2>
+
+<p>
+    @Html.ActionLink("Add new", "Create", null, new { @class = "btn btn-default" })
+    <button id="btnPublish" class="btn btn-default">Update messaging extension</button>
+    <div id="divPublishMessage"></div>
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(m => m.ImageUri)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.Keywords)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <img src="@item.ImageUri" width="250" />
+            </td>
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.Keywords
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
+</table>
+
+<script type="text/javascript">
+    function gettoken() {
+        var token = '@Html.AntiForgeryToken()';
+        token = $(token).val();
+        return token;
+    }
+
+    $(document).ready(function () {
+        $("#btnPublish").click(function () {
+            $("#divPublishMessage").text("");
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Publish")",
+                data: {
+                    __RequestVerificationToken: gettoken(),
+                },
+                contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                success: function () {
+                    $("#divPublishMessage")
+                        .text("The messaging extension configuration was successfully updated.")
+                        .removeClass("text-danger")
+                        .addClass("text-success");
+                },
+                error: function () {
+                    $("#divPublishMessage")
+                        .text("There was an error updating the messaging extension.")
+                        .addClass("text-danger")
+                        .removeClass("text-success");
+                }
+            });
+        });
+    });
+</script>
