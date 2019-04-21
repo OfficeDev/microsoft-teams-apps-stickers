@@ -59,16 +59,10 @@ namespace StickersTemplate.Configuration
                             if (upn == null
                                 || !validUpns.Contains(upn, StringComparer.OrdinalIgnoreCase))
                             {
-                                throw new Exception("User is not in allowedUpn list.");
+                                context.OwinContext.Response.Redirect("/Account/InvalidUser");
+                                context.HandleResponse(); // Suppress further processing
                             }
 
-                            return Task.CompletedTask;
-                        },
-                        AuthenticationFailed = (context) =>
-                        {
-                            // Pass in the context back to the app
-                            context.OwinContext.Response.Redirect("/Account/InvalidUser");
-                            context.HandleResponse(); // Suppress the exception
                             return Task.CompletedTask;
                         },
                         RedirectToIdentityProvider = (context) =>
