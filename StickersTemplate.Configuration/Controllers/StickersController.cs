@@ -26,8 +26,8 @@ namespace StickersTemplate.Configuration.Controllers
     [Authorize]
     public class StickersController : Controller
     {
-        private IStickerStore stickerStore;
-        private IBlobStore blobStore;
+        private readonly IStickerStore stickerStore;
+        private readonly IBlobStore blobStore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StickersController"/> class.
