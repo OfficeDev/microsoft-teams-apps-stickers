@@ -1,0 +1,312 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "gitRepoUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "The URL to the GitHub repository to deploy."
+      },
+      "defaultValue": "https://github.com/OfficeDev/microsoft-teams-sticker-template.git"
+    },
+    "messagingExtensionAppId": {
+      "type": "string",
+      "minLength": 36,
+      "maxLength": 36,
+      "metadata": {
+        "description": "The Microsoft Application ID of the messaging extension, e.g., 123e4567-e89b-12d3-a456-426655440000."
+      }
+    },
+    "baseResourceName": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The base name to use for the resources that will be provisioned."
+      }
+    },
+    "configAppClientId": {
+      "type": "string",
+      "minLength": 36,
+      "maxLength": 36,
+      "metadata": {
+        "description": "The Microsoft App ID of the configuration app, e.g., 123e4567-e89b-12d3-a456-426655440000."
+      }
+    },
+    "configAdminUPNList": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "Semicolon-delimited list of the user principal names (UPNs) allowed to access the configuration app."
+      }
+    },
+    "tenantId": {
+      "type": "string",
+      "defaultValue": "[subscription().tenantId]",
+      "maxLength": 36,
+      "metadata": {
+        "description": "The ID of the tenant to which the app will be deployed."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "allowedValues": [
+        "Free",
+        "Shared",
+        "Basic",
+        "Standard",
+        "Premium"
+      ],
+      "defaultValue": "Standard",
+      "metadata": {
+        "description": "The pricing tier for the hosting plan."
+      }
+    },
+    "planSize": {
+      "type": "string",
+      "allowedValues": [
+        "1",
+        "2",
+        "3"
+      ],
+      "defaultValue": "1",
+      "metadata": {
+        "description": "The size of the hosting plan (small, medium, or large)."
+      }
+    },
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_RAGRS"
+      ],
+      "metadata": {
+        "description": "Storage Account type"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    }
+  },
+  "variables": {
+    "functionAppName": "[parameters('baseResourceName')]",
+    "hostingPlanName": "[parameters('baseResourceName')]",
+    "storageAccountName": "[uniquestring(concat(resourceGroup().id, parameters('baseResourceName')))]",
+    "applicationInsightsName": "[parameters('baseResourceName')]",
+    "configAppName": "[concat(parameters('baseResourceName'), '-config')]",
+    "configAppUrl": "[concat('https://', variables('configAppName'), '.azurewebsites.net')]",
+    "configApplicationInsightsName": "[concat(parameters('baseResourceName'), '-config')]",
+    "stickersBlobContainerName": "stickers",
+    "sharedSkus": [ "Free", "Shared" ],
+    "isSharedPlan": "[contains(variables('sharedSkus'), parameters('sku'))]",
+    "skuFamily": "[if(equals(parameters('sku'), 'Shared'), 'D', take(parameters('sku'), 1))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccountName')]",
+      "apiVersion": "2018-02-01",
+      "location": "[parameters('location')]",
+      "kind": "Storage",
+      "sku": {
+        "name": "[parameters('storageAccountType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2016-09-01",
+      "name": "[variables('hostingPlanName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "name": "[variables('hostingPlanName')]",
+        "hostingEnvironment": "",
+        "numberOfWorkers": 1
+      },
+      "sku": {
+        "name": "[if(variables('isSharedPlan'), concat(variables('skuFamily'),'1'), concat(variables('skuFamily'),parameters('planSize')))]",
+        "tier": "[parameters('sku')]",
+        "size": "[concat(variables('skuFamily'), parameters('planSize'))]",
+        "family": "[variables('skuFamily')]",
+        "capacity": 0
+      }
+    },
+    {
+      "apiVersion": "2016-08-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('functionAppName')]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "properties": {
+        "name": "[variables('functionAppName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "hostingEnvironment": "",
+        "clientAffinityEnabled": false,
+        "siteConfig": {
+          "alwaysOn": "[not(variables('isSharedPlan'))]",
+          "appSettings": [
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]"
+            },
+            {
+              "name": "AzureWebJobsDashboard",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]"
+            },
+
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~2"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "dotnet"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('functionAppName'))]"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('microsoft.insights/components/', variables('applicationInsightsName')), '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "MicrosoftAppId",
+              "value": "[parameters('messagingExtensionAppId')]"
+            },
+            {
+              "name": "ConfigUri",
+              "value": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')), '2016-01-01').primaryEndpoints.blob, variables('stickersBlobContainerName'), '/stickers.json')]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ],
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "name": "web",
+          "type": "sourcecontrols",
+          "condition": "[not(empty(parameters('gitRepoUrl')))]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+          ],
+          "properties": {
+            "RepoUrl": "[parameters('gitRepoUrl')]",
+            "branch": "master",
+            "IsManualIntegration": true
+          }
+        }
+      ]
+    },
+    {
+      "apiVersion": "2018-05-01-preview",
+      "name": "[variables('applicationInsightsName')]",
+      "type": "microsoft.insights/components",
+      "location": "East US",
+      "tags": {
+        "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', variables('functionAppName'))]": "Resource"
+      },
+      "properties": {
+        "ApplicationId": "[variables('applicationInsightsName')]",
+        "Request_Source": "rest"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2016-08-01",
+      "name": "[variables('configAppName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+      ],
+      "kind": "app",
+      "properties": {
+        "name": "[variables('configAppName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "enabled": true,
+        "reserved": false,
+        "scmSiteAlsoStopped": false,
+        "clientAffinityEnabled": true,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 0,
+        "dailyMemoryTimeQuota": 0,
+        "httpsOnly": true,
+        "siteConfig": {
+          "alwaysOn": false,
+          "appSettings": [
+            {
+              "name": "StorageConnectionString",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('microsoft.insights/components/', variables('configApplicationInsightsName')), '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "StickersBlobContainerName",
+              "value": "[variables('stickersBlobContainerName')]"
+            },
+            {
+              "name": "ida:ClientId",
+              "value": "[parameters('configAppClientId')]"
+            },
+            {
+              "name": "ida:TenantId",
+              "value": "[parameters('tenantId')]"
+            },
+            {
+              "name": "ida:PostLogoutRedirectUri",
+              "value": "[variables('configAppUrl')]"
+            },
+            {
+              "name": "ValidUpns",
+              "value": "[parameters('configAdminUPNList')]"
+            }
+          ]
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "name": "web",
+          "type": "sourcecontrols",
+          "condition": "[not(empty(parameters('gitRepoUrl')))]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('configAppName'))]"
+          ],
+          "properties": {
+            "RepoUrl": "[parameters('gitRepoUrl')]",
+            "branch": "master",
+            "IsManualIntegration": true
+          }
+        }
+      ]
+    },
+    {
+      "apiVersion": "2018-05-01-preview",
+      "name": "[variables('configApplicationInsightsName')]",
+      "type": "microsoft.insights/components",
+      "location": "East US",
+      "tags": {
+        "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', variables('configAppName'))]": "Resource"
+      },
+      "properties": {
+        "ApplicationId": "[variables('configApplicationInsightsName')]",
+        "Request_Source": "rest"
+      }
+    }
+  ]
+}
