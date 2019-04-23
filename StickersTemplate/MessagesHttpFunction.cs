@@ -100,13 +100,14 @@ namespace StickersTemplate
 
                 logger.LogInformation("Messages function received a request.");
 
-                // Use the configured service for tests or create the real one to use.
+                // Use the configured service for tests or create ones to use.
                 ISettings settings = this.settings ?? new Settings(logger, context);
                 IStickerSetRepository stickerSetRepository = this.stickerSetRepository ?? new StickerSetRepository(logger, settings);
                 IStickerSetIndexer stickerSetIndexer = this.stickerSetIndexer ?? new StickerSetIndexer(logger);
                 ICredentialProvider credentialProvider = this.credentialProvider ?? new SimpleCredentialProvider(settings.MicrosoftAppId, null);
                 IChannelProvider channelProvider = this.channelProvider ?? new SimpleChannelProvider();
 
+                // Parse the incoming activity and authenticate the request
                 Activity activity;
                 try
                 {
@@ -125,14 +126,24 @@ namespace StickersTemplate
                     return new UnauthorizedResult();
                 }
 
-                this.LogActivityTelemetry(activity);
-
-                if (!activity.IsComposeExtensionQuery())
+                // Log telemetry about the activity
+                try
                 {
-                    logger.LogDebug("Request payload was not a compose extension query.");
-                    return new BadRequestObjectResult($"App only supports compose extension query activity types.");
+                    this.LogActivityTelemetry(activity);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Error sending user activity telemetry");
                 }
 
+                // Reject all activity types other than those related to messaging extensions
+                if (!activity.IsComposeExtensionQuery())
+                {
+                    logger.LogDebug("Request payload was not a messaging extension query.");
+                    return new BadRequestObjectResult($"App only supports messaging extension query activity types.");
+                }
+
+                // Get the query string. We expect exactly 1 parameter, so we take the first parameter, regardless of the name.
                 var query = string.Empty;
                 if (activity.Value != null)
                 {
@@ -140,6 +151,7 @@ namespace StickersTemplate
                     query = queryValue.GetParameterValue();
                 }
 
+                // Find matching stickers
                 var stickerSet = await stickerSetRepository.FetchStickerSetAsync();
                 await stickerSetIndexer.IndexStickerSetAsync(stickerSet);
                 var stickers = await stickerSetIndexer.FindStickersByQuery(query);
@@ -203,6 +215,7 @@ namespace StickersTemplate
         {
             var fromObjectId = activity.From?.Properties["aadObjectId"]?.ToString();
             var clientInfoEntity = activity.Entities?.Where(e => e.Type == "clientInfo")?.FirstOrDefault();
+            var channelData = (JObject)activity.ChannelData;
 
             var properties = new Dictionary<string, string>
             {
@@ -210,11 +223,12 @@ namespace StickersTemplate
                 { "ActivityType", activity.Type },
                 { "ActivityName", activity.Name },
                 { "UserAadObjectId", fromObjectId },
-                { "ConversationId", activity.Conversation?.Id },
                 {
                     "ConversationType",
                     string.IsNullOrWhiteSpace(activity.Conversation?.ConversationType) ? "personal" : activity.Conversation.ConversationType
                 },
+                { "TeamId", channelData?["team"]?["id"]?.ToString() },
+                { "SourceName", channelData?["source"]?["name"]?.ToString() },
                 { "Locale", clientInfoEntity?.Properties["locale"]?.ToString() },
                 { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() }
             };
