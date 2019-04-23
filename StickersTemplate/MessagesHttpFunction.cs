@@ -30,36 +30,35 @@ namespace StickersTemplate
     /// <summary>
     /// Azure Function that handles HTTP messages from BotFramework.
     /// </summary>
-    public static class MessagesHttpFunction
+    public class MessagesHttpFunction
     {
-        private static ISettings settings;
-        private static IStickerSetRepository stickerSetRepository;
-        private static IStickerSetIndexer stickerSetIndexer;
-        private static ICredentialProvider credentialProvider;
-        private static IChannelProvider channelProvider;
+        private readonly ISettings settings;
+        private readonly IStickerSetRepository stickerSetRepository;
+        private readonly IStickerSetIndexer stickerSetIndexer;
+        private readonly ICredentialProvider credentialProvider;
+        private readonly IChannelProvider channelProvider;
 
         /// <summary>
-        /// Configures the services used by this Azure function for a test run.
-        /// This is necessary because of the static nature of Azure functions (and lack of DI).
+        /// Initializes a new instance of the <see cref="MessagesHttpFunction"/> class.
         /// </summary>
-        /// <param name="settings">The <see cref="ISettings"/>.</param>
-        /// <param name="stickerSetRepository">The <see cref="IStickerSetRepository"/>.</param>
-        /// <param name="stickerSetIndexer">The <see cref="IStickerSetIndexer"/>.</param>
-        /// <param name="credentialProvider">The <see cref="ICredentialProvider"/>.</param>
-        /// <param name="channelProvider">The <see cref="IChannelProvider"/>.</param>
+        /// <param name="settings">The <see cref="ISettings"/>The settins provider</param>
+        /// <param name="stickerSetRepository">The <see cref="IStickerSetRepository"/>The sticker set repository</param>
+        /// <param name="stickerSetIndexer">The <see cref="IStickerSetIndexer"/>The sticker set indexer</param>
+        /// <param name="credentialProvider">The <see cref="ICredentialProvider"/>The credential provider</param>
+        /// <param name="channelProvider">The <see cref="IChannelProvider"/>The channel provider</param>
         [ExcludeFromCodeCoverage]
-        public static void ConfigureForTests(
-            ISettings settings,
-            IStickerSetRepository stickerSetRepository,
-            IStickerSetIndexer stickerSetIndexer,
-            ICredentialProvider credentialProvider,
-            IChannelProvider channelProvider)
+        public MessagesHttpFunction(
+            ISettings settings = null,
+            IStickerSetRepository stickerSetRepository = null,
+            IStickerSetIndexer stickerSetIndexer = null,
+            ICredentialProvider credentialProvider = null,
+            IChannelProvider channelProvider = null)
         {
-            MessagesHttpFunction.settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            MessagesHttpFunction.stickerSetRepository = stickerSetRepository ?? throw new ArgumentNullException(nameof(stickerSetRepository));
-            MessagesHttpFunction.stickerSetIndexer = stickerSetIndexer ?? throw new ArgumentNullException(nameof(stickerSetIndexer));
-            MessagesHttpFunction.credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            MessagesHttpFunction.channelProvider = channelProvider ?? throw new ArgumentNullException(nameof(channelProvider));
+            this.settings = settings;
+            this.stickerSetRepository = stickerSetRepository;
+            this.stickerSetIndexer = stickerSetIndexer;
+            this.credentialProvider = credentialProvider;
+            this.channelProvider = channelProvider;
         }
 
         /// <summary>
@@ -70,7 +69,7 @@ namespace StickersTemplate
         /// <param name="context">The <see cref="ExecutionContext"/>.</param>
         /// <returns>A <see cref="Task"/> that results in an <see cref="IActionResult"/> when awaited.</returns>
         [FunctionName("messages")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger logger,
             ExecutionContext context)
@@ -95,11 +94,11 @@ namespace StickersTemplate
                 logger.LogInformation("Messages function received a request.");
 
                 // Use the configured service for tests or create the real one to use.
-                ISettings settings = MessagesHttpFunction.settings ?? new Settings(logger, context);
-                IStickerSetRepository stickerSetRepository = MessagesHttpFunction.stickerSetRepository ?? new StickerSetRepository(logger, settings);
-                IStickerSetIndexer stickerSetIndexer = MessagesHttpFunction.stickerSetIndexer ?? new StickerSetIndexer(logger);
-                ICredentialProvider credentialProvider = MessagesHttpFunction.credentialProvider ?? new SimpleCredentialProvider(settings.MicrosoftAppId, null);
-                IChannelProvider channelProvider = MessagesHttpFunction.channelProvider ?? new SimpleChannelProvider();
+                ISettings settings = this.settings ?? new Settings(logger, context);
+                IStickerSetRepository stickerSetRepository = this.stickerSetRepository ?? new StickerSetRepository(logger, settings);
+                IStickerSetIndexer stickerSetIndexer = this.stickerSetIndexer ?? new StickerSetIndexer(logger);
+                ICredentialProvider credentialProvider = this.credentialProvider ?? new SimpleCredentialProvider(settings.MicrosoftAppId, null);
+                IChannelProvider channelProvider = this.channelProvider ?? new SimpleChannelProvider();
 
                 Activity activity;
                 try
