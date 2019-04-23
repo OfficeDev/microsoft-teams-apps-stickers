@@ -394,7 +394,7 @@ namespace StickersTemplate.Tests
             var credentialProvider = new Mock<ICredentialProvider>();
             credentialProvider.Setup((c) => c.IsAuthenticationDisabledAsync()).ReturnsAsync(true);
             var channelProvider = new Mock<IChannelProvider>();
-            this.function = new MessagesHttpFunction(settings.Object, stickerSetRepository.Object, stickerSetIndexer.Object, credentialProvider.Object, channelProvider.Object);
+            this.function = new MessagesHttpFunction(null, settings.Object, stickerSetRepository.Object, stickerSetIndexer.Object, credentialProvider.Object, channelProvider.Object);
         }
 
         [TestCleanup]

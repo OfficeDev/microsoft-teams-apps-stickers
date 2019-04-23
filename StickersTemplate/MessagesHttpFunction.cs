@@ -7,10 +7,13 @@
 namespace StickersTemplate
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.WebJobs;
@@ -32,6 +35,7 @@ namespace StickersTemplate
     /// </summary>
     public class MessagesHttpFunction
     {
+        private readonly TelemetryClient telemetryClient;
         private readonly ISettings settings;
         private readonly IStickerSetRepository stickerSetRepository;
         private readonly IStickerSetIndexer stickerSetIndexer;
@@ -41,19 +45,22 @@ namespace StickersTemplate
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagesHttpFunction"/> class.
         /// </summary>
-        /// <param name="settings">The <see cref="ISettings"/>The settins provider</param>
-        /// <param name="stickerSetRepository">The <see cref="IStickerSetRepository"/>The sticker set repository</param>
-        /// <param name="stickerSetIndexer">The <see cref="IStickerSetIndexer"/>The sticker set indexer</param>
-        /// <param name="credentialProvider">The <see cref="ICredentialProvider"/>The credential provider</param>
-        /// <param name="channelProvider">The <see cref="IChannelProvider"/>The channel provider</param>
+        /// <param name="telemetryConfiguration">The telemetry configuration</param>
+        /// <param name="settings">The <see cref="ISettings"/>.</param>
+        /// <param name="stickerSetRepository">The <see cref="IStickerSetRepository"/>.</param>
+        /// <param name="stickerSetIndexer">The <see cref="IStickerSetIndexer"/>.</param>
+        /// <param name="credentialProvider">The <see cref="ICredentialProvider"/>.</param>
+        /// <param name="channelProvider">The <see cref="IChannelProvider"/>.</param>
         [ExcludeFromCodeCoverage]
         public MessagesHttpFunction(
+            TelemetryConfiguration telemetryConfiguration,
             ISettings settings = null,
             IStickerSetRepository stickerSetRepository = null,
             IStickerSetIndexer stickerSetIndexer = null,
             ICredentialProvider credentialProvider = null,
             IChannelProvider channelProvider = null)
         {
+            this.telemetryClient = new TelemetryClient(telemetryConfiguration);
             this.settings = settings;
             this.stickerSetRepository = stickerSetRepository;
             this.stickerSetIndexer = stickerSetIndexer;
@@ -117,6 +124,8 @@ namespace StickersTemplate
                     logger.LogDebug(e, "Request was not propertly authorized.");
                     return new UnauthorizedResult();
                 }
+
+                this.LogActivityTelemetry(activity);
 
                 if (!activity.IsComposeExtensionQuery())
                 {
@@ -184,6 +193,32 @@ namespace StickersTemplate
                 var activityJObject = await JObject.LoadAsync(jsonReader);
                 return activityJObject.ToObject<Activity>();
             }
+        }
+
+        /// <summary>
+        /// Log telemetry about the incoming activity.
+        /// </summary>
+        /// <param name="activity">The activity</param>
+        private void LogActivityTelemetry(Activity activity)
+        {
+            var fromObjectId = activity.From?.Properties["aadObjectId"]?.ToString();
+            var clientInfoEntity = activity.Entities?.Where(e => e.Type == "clientInfo")?.FirstOrDefault();
+
+            var properties = new Dictionary<string, string>
+            {
+                { "ActivityId", activity.Id },
+                { "ActivityType", activity.Type },
+                { "ActivityName", activity.Name },
+                { "UserAadObjectId", fromObjectId },
+                { "ConversationId", activity.Conversation?.Id },
+                {
+                    "ConversationType",
+                    string.IsNullOrWhiteSpace(activity.Conversation?.ConversationType) ? "personal" : activity.Conversation.ConversationType
+                },
+                { "Locale", clientInfoEntity?.Properties["locale"]?.ToString() },
+                { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() }
+            };
+            this.telemetryClient.TrackEvent("UserActivity", properties);
         }
     }
 }
