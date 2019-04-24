@@ -41,6 +41,8 @@ namespace StickersTemplate.Tests
             new Sticker("sticker3", new Uri("http://localhost"), new string[] { "sticker3" } ),
         });
 
+        private MessagesHttpFunction function;
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public async Task Run_NullRequest()
@@ -50,7 +52,7 @@ namespace StickersTemplate.Tests
             var context = new ExecutionContext();
 
             // Action
-            var result = await MessagesHttpFunction.Run(null, logger.Object, context);
+            var result = await this.function.Run(null, logger.Object, context);
         }
 
         [TestMethod]
@@ -62,7 +64,7 @@ namespace StickersTemplate.Tests
             var context = new ExecutionContext();
 
             // Action
-            var result = await MessagesHttpFunction.Run(request.Object, null, context);
+            var result = await this.function.Run(request.Object, null, context);
         }
 
         [TestMethod]
@@ -74,7 +76,7 @@ namespace StickersTemplate.Tests
             var logger = new Mock<ILogger>();
 
             // Action
-            var result = await MessagesHttpFunction.Run(request.Object, logger.Object, null);
+            var result = await this.function.Run(request.Object, logger.Object, null);
         }
 
         [TestMethod]
@@ -90,7 +92,7 @@ namespace StickersTemplate.Tests
             };
 
             // Action
-            var result = await MessagesHttpFunction.Run(request.Object, logger.Object, context);
+            var result = await this.function.Run(request.Object, logger.Object, context);
 
             // Validation
             Assert.IsNotNull(result);
@@ -111,7 +113,7 @@ namespace StickersTemplate.Tests
             };
 
             // Action
-            var result = await MessagesHttpFunction.Run(request.Object, logger.Object, context);
+            var result = await this.function.Run(request.Object, logger.Object, context);
 
             // Validation
             Assert.IsNotNull(result);
@@ -134,7 +136,7 @@ namespace StickersTemplate.Tests
             };
 
             // Action
-            var result = await MessagesHttpFunction.Run(request.Object, logger.Object, context);
+            var result = await this.function.Run(request.Object, logger.Object, context);
 
             // Validation
             Assert.IsNotNull(result);
@@ -158,7 +160,7 @@ namespace StickersTemplate.Tests
             };
 
             // Action
-            var result = await MessagesHttpFunction.Run(request.Object, logger.Object, context);
+            var result = await this.function.Run(request.Object, logger.Object, context);
 
             // Validation
             Assert.IsNotNull(result);
@@ -184,7 +186,7 @@ namespace StickersTemplate.Tests
             };
 
             // Action
-            var result = await MessagesHttpFunction.Run(request.Object, logger.Object, context);
+            var result = await this.function.Run(request.Object, logger.Object, context);
 
             // Validation
             Assert.IsNotNull(result);
@@ -215,7 +217,7 @@ namespace StickersTemplate.Tests
             };
 
             // Action
-            var result = await MessagesHttpFunction.Run(request.Object, logger.Object, context);
+            var result = await this.function.Run(request.Object, logger.Object, context);
 
             // Validation
             Assert.IsNotNull(result);
@@ -247,7 +249,7 @@ namespace StickersTemplate.Tests
             };
 
             // Action
-            var result = await MessagesHttpFunction.Run(request.Object, logger.Object, context);
+            var result = await this.function.Run(request.Object, logger.Object, context);
 
             // Validation
             Assert.IsNotNull(result);
@@ -296,7 +298,7 @@ namespace StickersTemplate.Tests
             };
 
             // Action
-            var result = await MessagesHttpFunction.Run(request.Object, logger.Object, context);
+            var result = await this.function.Run(request.Object, logger.Object, context);
 
             // Validation
             Assert.IsNotNull(result);
@@ -345,7 +347,7 @@ namespace StickersTemplate.Tests
             };
 
             // Action
-            var result = await MessagesHttpFunction.Run(request.Object, logger.Object, context);
+            var result = await this.function.Run(request.Object, logger.Object, context);
 
             // Validation
             Assert.IsNotNull(result);
@@ -392,7 +394,7 @@ namespace StickersTemplate.Tests
             var credentialProvider = new Mock<ICredentialProvider>();
             credentialProvider.Setup((c) => c.IsAuthenticationDisabledAsync()).ReturnsAsync(true);
             var channelProvider = new Mock<IChannelProvider>();
-            MessagesHttpFunction.ConfigureForTests(settings.Object, stickerSetRepository.Object, stickerSetIndexer.Object, credentialProvider.Object, channelProvider.Object);
+            this.function = new MessagesHttpFunction(null, settings.Object, stickerSetRepository.Object, stickerSetIndexer.Object, credentialProvider.Object, channelProvider.Object);
         }
 
         [TestCleanup]
