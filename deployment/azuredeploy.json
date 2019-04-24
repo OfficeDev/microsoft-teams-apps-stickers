@@ -2,19 +2,19 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "baseResourceName": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "The base name to use for the resources that will be provisioned."
+      }
+    },
     "messagingExtensionAppId": {
       "type": "string",
       "minLength": 36,
       "maxLength": 36,
       "metadata": {
         "description": "The Microsoft Application ID of the messaging extension, e.g., 123e4567-e89b-12d3-a456-426655440000."
-      }
-    },
-    "baseResourceName": {
-      "type": "string",
-      "minLength": 1,
-      "metadata": {
-        "description": "The base name to use for the resources that will be provisioned."
       }
     },
     "configAppClientId": {
