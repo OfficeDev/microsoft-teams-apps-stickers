@@ -7,10 +7,13 @@
 namespace StickersTemplate
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.WebJobs;
@@ -30,36 +33,39 @@ namespace StickersTemplate
     /// <summary>
     /// Azure Function that handles HTTP messages from BotFramework.
     /// </summary>
-    public static class MessagesHttpFunction
+    public class MessagesHttpFunction
     {
-        private static ISettings settings;
-        private static IStickerSetRepository stickerSetRepository;
-        private static IStickerSetIndexer stickerSetIndexer;
-        private static ICredentialProvider credentialProvider;
-        private static IChannelProvider channelProvider;
+        private readonly TelemetryClient telemetryClient;
+        private readonly ISettings settings;
+        private readonly IStickerSetRepository stickerSetRepository;
+        private readonly IStickerSetIndexer stickerSetIndexer;
+        private readonly ICredentialProvider credentialProvider;
+        private readonly IChannelProvider channelProvider;
 
         /// <summary>
-        /// Configures the services used by this Azure function for a test run.
-        /// This is necessary because of the static nature of Azure functions (and lack of DI).
+        /// Initializes a new instance of the <see cref="MessagesHttpFunction"/> class.
         /// </summary>
+        /// <param name="telemetryConfiguration">The telemetry configuration</param>
         /// <param name="settings">The <see cref="ISettings"/>.</param>
         /// <param name="stickerSetRepository">The <see cref="IStickerSetRepository"/>.</param>
         /// <param name="stickerSetIndexer">The <see cref="IStickerSetIndexer"/>.</param>
         /// <param name="credentialProvider">The <see cref="ICredentialProvider"/>.</param>
         /// <param name="channelProvider">The <see cref="IChannelProvider"/>.</param>
         [ExcludeFromCodeCoverage]
-        public static void ConfigureForTests(
-            ISettings settings,
-            IStickerSetRepository stickerSetRepository,
-            IStickerSetIndexer stickerSetIndexer,
-            ICredentialProvider credentialProvider,
-            IChannelProvider channelProvider)
+        public MessagesHttpFunction(
+            TelemetryConfiguration telemetryConfiguration,
+            ISettings settings = null,
+            IStickerSetRepository stickerSetRepository = null,
+            IStickerSetIndexer stickerSetIndexer = null,
+            ICredentialProvider credentialProvider = null,
+            IChannelProvider channelProvider = null)
         {
-            MessagesHttpFunction.settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            MessagesHttpFunction.stickerSetRepository = stickerSetRepository ?? throw new ArgumentNullException(nameof(stickerSetRepository));
-            MessagesHttpFunction.stickerSetIndexer = stickerSetIndexer ?? throw new ArgumentNullException(nameof(stickerSetIndexer));
-            MessagesHttpFunction.credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            MessagesHttpFunction.channelProvider = channelProvider ?? throw new ArgumentNullException(nameof(channelProvider));
+            this.telemetryClient = new TelemetryClient(telemetryConfiguration);
+            this.settings = settings;
+            this.stickerSetRepository = stickerSetRepository;
+            this.stickerSetIndexer = stickerSetIndexer;
+            this.credentialProvider = credentialProvider;
+            this.channelProvider = channelProvider;
         }
 
         /// <summary>
@@ -70,7 +76,7 @@ namespace StickersTemplate
         /// <param name="context">The <see cref="ExecutionContext"/>.</param>
         /// <returns>A <see cref="Task"/> that results in an <see cref="IActionResult"/> when awaited.</returns>
         [FunctionName("messages")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger logger,
             ExecutionContext context)
@@ -94,13 +100,14 @@ namespace StickersTemplate
 
                 logger.LogInformation("Messages function received a request.");
 
-                // Use the configured service for tests or create the real one to use.
-                ISettings settings = MessagesHttpFunction.settings ?? new Settings(logger, context);
-                IStickerSetRepository stickerSetRepository = MessagesHttpFunction.stickerSetRepository ?? new StickerSetRepository(logger, settings);
-                IStickerSetIndexer stickerSetIndexer = MessagesHttpFunction.stickerSetIndexer ?? new StickerSetIndexer(logger);
-                ICredentialProvider credentialProvider = MessagesHttpFunction.credentialProvider ?? new SimpleCredentialProvider(settings.MicrosoftAppId, null);
-                IChannelProvider channelProvider = MessagesHttpFunction.channelProvider ?? new SimpleChannelProvider();
+                // Use the configured service for tests or create ones to use.
+                ISettings settings = this.settings ?? new Settings(logger, context);
+                IStickerSetRepository stickerSetRepository = this.stickerSetRepository ?? new StickerSetRepository(logger, settings);
+                IStickerSetIndexer stickerSetIndexer = this.stickerSetIndexer ?? new StickerSetIndexer(logger);
+                ICredentialProvider credentialProvider = this.credentialProvider ?? new SimpleCredentialProvider(settings.MicrosoftAppId, null);
+                IChannelProvider channelProvider = this.channelProvider ?? new SimpleChannelProvider();
 
+                // Parse the incoming activity and authenticate the request
                 Activity activity;
                 try
                 {
@@ -119,12 +126,24 @@ namespace StickersTemplate
                     return new UnauthorizedResult();
                 }
 
-                if (!activity.IsComposeExtensionQuery())
+                // Log telemetry about the activity
+                try
                 {
-                    logger.LogDebug("Request payload was not a compose extension query.");
-                    return new BadRequestObjectResult($"App only supports compose extension query activity types.");
+                    this.LogActivityTelemetry(activity);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Error sending user activity telemetry");
                 }
 
+                // Reject all activity types other than those related to messaging extensions
+                if (!activity.IsComposeExtensionQuery())
+                {
+                    logger.LogDebug("Request payload was not a messaging extension query.");
+                    return new BadRequestObjectResult($"App only supports messaging extension query activity types.");
+                }
+
+                // Get the query string. We expect exactly 1 parameter, so we take the first parameter, regardless of the name.
                 var query = string.Empty;
                 if (activity.Value != null)
                 {
@@ -132,6 +151,7 @@ namespace StickersTemplate
                     query = queryValue.GetParameterValue();
                 }
 
+                // Find matching stickers
                 var stickerSet = await stickerSetRepository.FetchStickerSetAsync();
                 await stickerSetIndexer.IndexStickerSetAsync(stickerSet);
                 var stickers = await stickerSetIndexer.FindStickersByQuery(query);
@@ -185,6 +205,34 @@ namespace StickersTemplate
                 var activityJObject = await JObject.LoadAsync(jsonReader);
                 return activityJObject.ToObject<Activity>();
             }
+        }
+
+        /// <summary>
+        /// Log telemetry about the incoming activity.
+        /// </summary>
+        /// <param name="activity">The activity</param>
+        private void LogActivityTelemetry(Activity activity)
+        {
+            var fromObjectId = activity.From?.Properties["aadObjectId"]?.ToString();
+            var clientInfoEntity = activity.Entities?.Where(e => e.Type == "clientInfo")?.FirstOrDefault();
+            var channelData = (JObject)activity.ChannelData;
+
+            var properties = new Dictionary<string, string>
+            {
+                { "ActivityId", activity.Id },
+                { "ActivityType", activity.Type },
+                { "ActivityName", activity.Name },
+                { "UserAadObjectId", fromObjectId },
+                {
+                    "ConversationType",
+                    string.IsNullOrWhiteSpace(activity.Conversation?.ConversationType) ? "personal" : activity.Conversation.ConversationType
+                },
+                { "TeamId", channelData?["team"]?["id"]?.ToString() },
+                { "SourceName", channelData?["source"]?["name"]?.ToString() },
+                { "Locale", clientInfoEntity?.Properties["locale"]?.ToString() },
+                { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() }
+            };
+            this.telemetryClient.TrackEvent("UserActivity", properties);
         }
     }
 }
