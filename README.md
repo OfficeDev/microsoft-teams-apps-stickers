@@ -56,7 +56,7 @@ At this point you have 3 unique GUIDs:
 
 1. Go to the [Stickers app on GitHub](https://github.com/officedev/microsoft-teams-stickers-app) and click on the "Deploy to Azure" button below.
 
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOfficeDev%2Fmicrosoft-teams-stickers-app2%2Fmaster%2Fdeployment%2Fazuredeploy.json)
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOfficeDev%2Fmicrosoft-teams-stickers-app2%2Fmaster%2Fdeployment%2Fazuredeploy.json)
 
 2. When prompted, log in to your Azure subscription.
 
@@ -127,7 +127,7 @@ Upload your custom stickers. To get you started, we have a set of sample sticker
 
 4.	When you’re done adding stickers, click on “Update messaging extension” so that your changes are reflected in the messaging extension.
 
-![Update messaging extension](/docs/images/stickers_configuration_update.png)
+![Update messaging extension](/docs/images/stickers_configuration_publish.png)
 
 ## Step 5: Create the Teams app package
 
@@ -160,6 +160,20 @@ Upload your custom stickers. To get you started, we have a set of sample sticker
 Have fun sharing custom stickers!
 
 ## Troubleshooting
+
+Common issues when deploying or installing the app.
+
+### 1. Location doesn't support Application Insights.
+![Error when Application Insights is not supported](/docs/images/troubleshooting_appinsights_location.png)
+```
+The subscription is not registered for the resource type 'components' in the region '<region>'. Please re-register for this provider in order to have access to this location.
+```
+* The resources of type "microsoft.insights/components" failed with status "Conflict"
+
+To resolve this issue, create the resource group in a location where Application Insights is available. For an up-to-date list of these locations, refer to https://azure.microsoft.com/en-us/global-infrastructure/services/?products=monitor, under "Log Analytics".
+
+### 2. App service names are not available.
+
 
 # Architecture
 
