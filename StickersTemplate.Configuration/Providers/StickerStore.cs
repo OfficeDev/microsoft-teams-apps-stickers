@@ -22,7 +22,7 @@ namespace StickersTemplate.Configuration.Providers
     {
         private readonly string connectionString;
         private readonly string tableName;
-        private readonly Task initializeTask;
+        private readonly Lazy<Task> initializeTask;
         private CloudTable cloudTable;
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace StickersTemplate.Configuration.Providers
         {
             this.connectionString = connectionString;
             this.tableName = tableName;
-            this.initializeTask = this.InitializeAsync();
+            this.initializeTask = new Lazy<Task>(() => this.InitializeAsync());
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace StickersTemplate.Configuration.Providers
         /// <returns>Task Sticker</returns>
         public async Task<Sticker> GetStickerAsync(string id)
         {
-            await this.initializeTask;
+            await this.EnsureInitializedAsync();
 
             TableOperation tableOperation = TableOperation.Retrieve<AzureTableSticker>(AzureTableSticker.DefaultPartitionKey, id);
             TableResult getResult = await this.cloudTable.ExecuteAsync(tableOperation);
@@ -65,7 +65,7 @@ namespace StickersTemplate.Configuration.Providers
         /// <returns>Task</returns>
         public async Task DeleteStickerAsync(string stickerId)
         {
-            await this.initializeTask;
+            await this.EnsureInitializedAsync();
 
             var deleteOperation = TableOperation.Delete(new AzureTableSticker(stickerId));
             var result = await this.cloudTable.ExecuteAsync(deleteOperation);
@@ -81,7 +81,7 @@ namespace StickersTemplate.Configuration.Providers
         /// <returns>List of Sticker</returns>
         public async Task<IList<Sticker>> GetStickersAsync()
         {
-            await this.initializeTask;
+            await this.EnsureInitializedAsync();
 
             return this.cloudTable.CreateQuery<AzureTableSticker>()
                 .ToList()
@@ -97,7 +97,7 @@ namespace StickersTemplate.Configuration.Providers
         /// <returns>Task</returns>
         public async Task UpdateStickerAsync(Sticker sticker)
         {
-            await this.initializeTask;
+            await this.EnsureInitializedAsync();
 
             var saveOperation = TableOperation.InsertOrReplace(new AzureTableSticker(sticker));
             var saveResult = await this.cloudTable.ExecuteAsync(saveOperation);
@@ -114,6 +114,8 @@ namespace StickersTemplate.Configuration.Providers
         /// <returns>Task</returns>
         public async Task CreateStickerAsync(Sticker sticker)
         {
+            await this.EnsureInitializedAsync();
+
             var count = this.cloudTable.CreateQuery<AzureTableSticker>()
                 .Select(s => s.RowKey)
                 .ToList()
@@ -135,7 +137,7 @@ namespace StickersTemplate.Configuration.Providers
         /// <returns>Task</returns>
         public async Task UpdateStickersAsync(IList<Sticker> stickers)
         {
-            await this.initializeTask;
+            await this.EnsureInitializedAsync();
 
             int index = 0;
             var batchOperation = new TableBatchOperation();
@@ -168,6 +170,11 @@ namespace StickersTemplate.Configuration.Providers
             await table.CreateIfNotExistsAsync();
 
             this.cloudTable = table;
+        }
+
+        private async Task EnsureInitializedAsync()
+        {
+            await this.initializeTask.Value;
         }
     }
 }
