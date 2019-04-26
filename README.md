@@ -3,7 +3,7 @@
 | [Documentation](https://github.com/OfficeDev/microsoft-teams-stickers-app/wiki) | [Deployment](https://github.com/OfficeDev/microsoft-teams-stickers-app/wiki/Deployment-guide) | [Architecture](https://github.com/OfficeDev/microsoft-teams-stickers-app/wiki/Solution-overview) |
 | ---- | ---- | ---- |
 
-Self-expression is core to Teams culture. This app template is a message extension that enables your users to use custom stickers and GIFs within the Teams chat experience. This template provides an easy web-based configuration experience where IT admins can upload the GIFs/stickers/images they want their end-users to have.
+Self-expression is core to Teams culture. This app template is a messaging extension that enables your users to use custom stickers and GIFs within the Teams chat experience. This template provides an easy web-based configuration experience where IT admins can upload the GIFs/stickers/images they want their end-users to have.
 
 ![Custom stickers in action](https://github.com/OfficeDev/microsoft-teams-stickers-app/wiki/images/CustomStickers.gif)
 
