@@ -222,13 +222,13 @@
     },
     {
       "apiVersion": "2018-07-12",
-      "name":"[variables('botName')]",
+      "name": "[variables('botName')]",
       "type": "Microsoft.BotService/botServices",
       "location": "global",
       "sku": {
         "name": "F0"
-      }, 
-      "kind": "sdk", 
+      },
+      "kind": "sdk",
       "properties": {
         "displayName": "[variables('botName')]",
         "msaAppId": "[parameters('messagingExtensionAppId')]",
@@ -236,25 +236,25 @@
         "developerAppInsightKey": "[reference(resourceId('Microsoft.Insights/components', variables('functionAppInsightsName')), '2015-05-01').InstrumentationKey]"
       },
       "resources": [
-          {
-              "name": "[concat(variables('botName'), '/MsTeamsChannel')]", 
-              "type": "Microsoft.BotService/botServices/channels", 
-              "apiVersion": "2018-07-12",
-              "location": "global",
-              "sku": {
-                  "name": "F0"
-              }, 
-              "properties": {
-                  "channelName": "MsTeamsChannel",
-                  "location": "global", 
-                  "properties": {
-                      "isEnabled": true
-                  }
-              }, 
-              "dependsOn": [
-                  "[concat('Microsoft.BotService/botServices/', variables('botName'))]"
-              ]
-          }
+        {
+          "name": "[concat(variables('botName'), '/MsTeamsChannel')]",
+          "type": "Microsoft.BotService/botServices/channels",
+          "apiVersion": "2018-07-12",
+          "location": "global",
+          "sku": {
+            "name": "F0"
+          },
+          "properties": {
+            "channelName": "MsTeamsChannel",
+            "location": "global",
+            "properties": {
+              "isEnabled": true
+            }
+          },
+          "dependsOn": [
+            "[concat('Microsoft.BotService/botServices/', variables('botName'))]"
+          ]
+        }
       ]
     },
     {
