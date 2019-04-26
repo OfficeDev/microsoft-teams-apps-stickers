@@ -39,6 +39,10 @@ namespace StickersTemplate.Configuration
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions());
 
+            var validUpns = ConfigurationManager.AppSettings["ValidUpns"]
+                ?.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                ?.Select(s => s.Trim())
+                ?? new string[0];
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
@@ -49,9 +53,6 @@ namespace StickersTemplate.Configuration
                     {
                         SecurityTokenValidated = (context) =>
                         {
-                            var validUpns = ConfigurationManager.AppSettings["ValidUpns"]?.Split(';')
-                                ?? new string[0];
-
                             var upnClaim = context?.AuthenticationTicket?.Identity?.Claims?
                                 .FirstOrDefault(c => c.Type == ClaimTypes.Upn);
                             var upn = upnClaim?.Value;
