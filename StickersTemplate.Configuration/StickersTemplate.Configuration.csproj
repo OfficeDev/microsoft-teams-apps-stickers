@@ -243,8 +243,6 @@
     <Content Include="lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js" />
     <Content Include="lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js" />
     <Content Include="lib\jquery\jquery.min.map" />
-    <None Include="Properties\PublishProfiles\stickersdeploytest1-config - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\stickerstestdeploy1-config - Web Deploy.pubxml" />
     <Content Include="lib\bootstrap\dist\css\bootstrap-theme.css" />
     <Content Include="lib\bootstrap\dist\css\bootstrap-theme.min.css" />
     <Content Include="lib\bootstrap\dist\css\bootstrap.css" />
