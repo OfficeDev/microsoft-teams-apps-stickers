@@ -14,6 +14,7 @@ namespace StickersTemplate.Configuration.Controllers
     using System.Text;
     using System.Threading.Tasks;
     using System.Web.Mvc;
+    using ImageResizer;
     using Microsoft.Azure;
     using Newtonsoft.Json;
     using StickersTemplate.Configuration.Models;
@@ -73,12 +74,21 @@ namespace StickersTemplate.Configuration.Controllers
             if (this.ModelState.IsValid)
             {
                 var id = Guid.NewGuid().ToString("D");
-                var uri = await this.blobStore.UploadBlobAsync(id, stickerViewModel.File.InputStream);
+                Uri imageUri;
+
+                // Resize the image to fit within the maximum dimensions
+                using (var memoryStream = new MemoryStream())
+                {
+                    ImageBuilder.Current.Build(stickerViewModel.File, memoryStream, new ResizeSettings($"maxwidth={Sticker.MaximumDimensionInPixels}&maxheight={Sticker.MaximumDimensionInPixels}"));
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+
+                    imageUri = await this.blobStore.UploadBlobAsync(id, memoryStream);
+                }
 
                 await this.stickerStore.CreateStickerAsync(new Sticker
                 {
                     Id = id,
-                    ImageUri = uri,
+                    ImageUri = imageUri,
                     Name = stickerViewModel.Name,
                     Keywords = stickerViewModel?.GetKeywordsList(),
                     State = StickerState.Active,

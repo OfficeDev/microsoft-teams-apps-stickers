@@ -15,6 +15,11 @@ namespace StickersTemplate.Configuration.Models
     public class Sticker
     {
         /// <summary>
+        /// Maximum dimension of a sticker in pixels
+        /// </summary>
+        public const int MaximumDimensionInPixels = 640;
+
+        /// <summary>
         /// Gets or sets Id
         /// </summary>
         public string Id { get; set; }
