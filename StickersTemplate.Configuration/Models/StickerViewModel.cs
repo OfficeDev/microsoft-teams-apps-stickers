@@ -17,6 +17,8 @@ namespace StickersTemplate.Configuration.Models
     /// </summary>
     public class StickerViewModel
     {
+        private string name;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="StickerViewModel"/> class.
         /// </summary>
@@ -52,7 +54,11 @@ namespace StickersTemplate.Configuration.Models
         /// <summary>
         /// Gets or sets Name
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get => this.name;
+            set => this.name = value?.Trim();
+        }
 
         /// <summary>
         /// Gets or sets Keywords
@@ -80,7 +86,10 @@ namespace StickersTemplate.Configuration.Models
         /// <returns>Keywords List</returns>
         public List<string> GetKeywordsList()
         {
-            return this.Keywords?.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+            return this.Keywords?.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim())
+                .Distinct(StringComparer.InvariantCultureIgnoreCase)
+                .ToList();
         }
     }
 }
