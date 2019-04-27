@@ -1,0 +1,6 @@
+# Paths with files restored by libman
+lib/bootstrap/
+lib/jquery/
+lib/jquery-validate/
+lib/jquery-validation-unobtrusive/
+lib/modernizr/
