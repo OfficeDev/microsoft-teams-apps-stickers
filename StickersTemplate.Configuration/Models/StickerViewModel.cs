@@ -56,8 +56,8 @@ namespace StickersTemplate.Configuration.Models
         /// </summary>
         public string Name
         {
-            get => this.name;
-            set => this.name = value?.Trim();
+            get { return this.name; }
+            set { this.name = value?.Trim(); }
         }
 
         /// <summary>
