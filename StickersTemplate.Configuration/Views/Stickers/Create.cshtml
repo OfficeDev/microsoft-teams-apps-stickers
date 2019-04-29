@@ -35,13 +35,14 @@
             @Html.LabelFor(model => model.Keywords, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Keywords, new { htmlAttributes = new { @class = "form-control" } })
+                <div class="small text-muted">Enter relevant search terms, separated by commas or spaces.</div>
                 @Html.ValidationMessageFor(model => model.Keywords, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input id="btnSave" type="submit" value="Add sticker" class="btn btn-default" disabled />
             </div>
         </div>
     </div>
@@ -62,9 +63,11 @@
 
             var reader = new FileReader();
             reader.onload = function (e) {
-                $('#imgFile')
+                $("#imgFile")
                     .removeClass("hidden")
-                    .attr('src', e.target.result);
+                    .attr("src", e.target.result);
+                $("#btnSave")
+                    .removeAttr("disabled");
             };
             reader.readAsDataURL(file);
 
