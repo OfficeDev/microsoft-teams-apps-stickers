@@ -17,7 +17,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.ImageUri, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <img id="imgFile" src="#" alt="Selected image" class="hidden" width="250"/>
+                <img id="imgFile" src="#" alt="Selected image" class="hidden" width="280"/>
                 <input class="form-control" type="file" name="File" accept="image/gif, image/jpeg, image/png" onchange="readURL(this);" />
                 @Html.ValidationMessageFor(model => model.File, "", new { @class = "text-danger" })
             </div>
