@@ -78,7 +78,7 @@
       "metadata": {
         "description": "The URL to the GitHub repository to deploy."
       },
-      "defaultValue": "https://github.com/OfficeDev/microsoft-teams-sticker-template.git"
+      "defaultValue": "https://github.com/OfficeDev/microsoft-teams-stickers-app.git"
     },
     "gitBranch": {
       "type": "string",
