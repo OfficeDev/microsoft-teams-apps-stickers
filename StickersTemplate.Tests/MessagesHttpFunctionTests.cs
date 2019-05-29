@@ -42,6 +42,7 @@ namespace StickersTemplate.Tests
         });
 
         private MessagesHttpFunction function;
+        private Mock<IStickerSetIndexer> stickerSetIndexerMock;
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -80,7 +81,7 @@ namespace StickersTemplate.Tests
         }
 
         [TestMethod]
-        public async Task Run_Request_MissingAllHeaders()
+        public async Task Run_Request_NullHeaders()
         {
             // Setup
             var request = new Mock<HttpRequest>();
@@ -302,6 +303,12 @@ namespace StickersTemplate.Tests
 
             // Validation
             Assert.IsNotNull(result);
+            stickerSetIndexerMock.Verify((s) => s.FindStickersByQuery(
+                It.Is<string>(i => i.Equals("search")),
+                It.Is<int>(i => i == 0),
+                It.Is<int>(i => i == 10),
+                It.IsAny<CancellationToken>()), Times.Once);
+
             ValidateResponse(result, 0);
         }
 
@@ -351,7 +358,98 @@ namespace StickersTemplate.Tests
 
             // Validation
             Assert.IsNotNull(result);
+            stickerSetIndexerMock.Verify((s) => s.FindStickersByQuery(
+                It.Is<string>(i => i.Equals(stickerSet.First().Name)),
+                It.Is<int>(i => i == 0),
+                It.Is<int>(i => i == 10),
+                It.IsAny<CancellationToken>()), Times.Once);
+                
             ValidateResponse(result, 1);
+        }
+
+        [TestMethod]
+        public async Task Run_Request_Body_QueryValue_WithResults_WithoutPagination()
+        {
+            // Setup
+            var request = new Mock<HttpRequest>();
+            var headers = new Mock<IHeaderDictionary>();
+            StringValues authHeaders = new StringValues("");
+            headers.Setup((h) => h.TryGetValue(It.Is<string>((s) => "Authorization".Equals(s)), out authHeaders)).Returns(true);
+            request.Setup((r) => r.Headers).Returns(headers.Object);
+
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "composeExtension/query",
+                Value = new ComposeExtensionValue
+                {
+                    CommandId = "commandId"
+                }
+            };
+            var body = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity)));
+            request.Setup((r) => r.Body).Returns(body);
+
+            var logger = new Mock<ILogger>();
+            var context = new ExecutionContext
+            {
+                FunctionAppDirectory = "localhost"
+            };
+
+            // Action
+            var result = await this.function.Run(request.Object, logger.Object, context);
+
+            // Validation
+            Assert.IsNotNull(result);
+            stickerSetIndexerMock.Verify((s) => s.FindStickersByQuery(
+                It.IsAny<string>(),
+                It.Is<int>(i => i == 0),
+                It.Is<int>(i => i == 25),
+                It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task Run_Request_Body_QueryValue_WithResults_WithPagination()
+        {
+            // Setup
+            var request = new Mock<HttpRequest>();
+            var headers = new Mock<IHeaderDictionary>();
+            StringValues authHeaders = new StringValues("");
+            headers.Setup((h) => h.TryGetValue(It.Is<string>((s) => "Authorization".Equals(s)), out authHeaders)).Returns(true);
+            request.Setup((r) => r.Headers).Returns(headers.Object);
+
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "composeExtension/query",
+                Value = new ComposeExtensionValue
+                {
+                    CommandId = "commandId",
+                    QueryOptions = new ComposeExtensionQueryOptions
+                    {
+                        Count = 15,
+                        Skip = 12
+                    }
+                }
+            };
+            var body = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity)));
+            request.Setup((r) => r.Body).Returns(body);
+
+            var logger = new Mock<ILogger>();
+            var context = new ExecutionContext
+            {
+                FunctionAppDirectory = "localhost"
+            };
+
+            // Action
+            var result = await this.function.Run(request.Object, logger.Object, context);
+
+            // Validation
+            Assert.IsNotNull(result);
+            stickerSetIndexerMock.Verify((s) => s.FindStickersByQuery(
+                It.IsAny<string>(),
+                It.Is<int>(i => i == 12),
+                It.Is<int>(i => i == 15),
+                It.IsAny<CancellationToken>()), Times.Once);
         }
 
         private void ValidateResponse(IActionResult result, int numExpectedAttachments)
@@ -386,15 +484,15 @@ namespace StickersTemplate.Tests
             stickerSetRepository.Setup((s) => s.FetchStickerSetAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(stickerSet);
 
-            var stickerSetIndexer = new Mock<IStickerSetIndexer>();
-            stickerSetIndexer.Setup((s) => s.IndexStickerSetAsync(It.IsAny<StickerSet>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-            stickerSetIndexer.Setup((s) => s.FindStickersByQuery(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((string query, CancellationToken token) => stickerSet.Where(s => string.IsNullOrWhiteSpace(query) || s.Name.Equals(query)));
+            stickerSetIndexerMock = new Mock<IStickerSetIndexer>();
+            stickerSetIndexerMock.Setup((s) => s.IndexStickerSetAsync(It.IsAny<StickerSet>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            stickerSetIndexerMock.Setup((s) => s.FindStickersByQuery(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((string query, int skip, int count, CancellationToken token) => stickerSet.Where(s => string.IsNullOrWhiteSpace(query) || s.Name.Equals(query)));
 
             var credentialProvider = new Mock<ICredentialProvider>();
             credentialProvider.Setup((c) => c.IsAuthenticationDisabledAsync()).ReturnsAsync(true);
             var channelProvider = new Mock<IChannelProvider>();
-            this.function = new MessagesHttpFunction(null, settings.Object, stickerSetRepository.Object, stickerSetIndexer.Object, credentialProvider.Object, channelProvider.Object);
+            this.function = new MessagesHttpFunction(null, settings.Object, stickerSetRepository.Object, stickerSetIndexerMock.Object, credentialProvider.Object, channelProvider.Object);
         }
 
         [TestCleanup]
