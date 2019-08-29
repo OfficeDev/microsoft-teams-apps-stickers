@@ -43,6 +43,8 @@ namespace StickersTemplate.Configuration
                 ?.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                 ?.Select(s => s.Trim())
                 ?? new string[0];
+            var upn = string.Empty;
+            var email = string.Empty;
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
@@ -54,14 +56,21 @@ namespace StickersTemplate.Configuration
                         SecurityTokenValidated = (context) =>
                         {
                             var upnClaim = context?.AuthenticationTicket?.Identity?.Claims?
-                                .FirstOrDefault(c => c.Type == ClaimTypes.Email);
-                            var upn = upnClaim?.Value;
+                                .FirstOrDefault(c => c.Type == ClaimTypes.Upn);
+                            upn = upnClaim?.Value;
 
-                            if (upn == null
+                            var emailClaim = context?.AuthenticationTicket?.Identity?.Claims?
+                                .FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                            email = emailClaim?.Value;
+
+                            if (string.IsNullOrWhiteSpace(upn)
                                 || !validUpns.Contains(upn, StringComparer.OrdinalIgnoreCase))
                             {
-                                context.OwinContext.Response.Redirect("/Account/InvalidUser");
-                                context.HandleResponse(); // Suppress further processing
+                                if (string.IsNullOrWhiteSpace(email))
+                                {
+                                    context.OwinContext.Response.Redirect("/Account/InvalidUser");
+                                    context.HandleResponse(); // Suppress further processing
+                                }
                             }
 
                             return Task.CompletedTask;
@@ -76,8 +85,14 @@ namespace StickersTemplate.Configuration
                         }
                     }
                 });
-
-            AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Email;
+            if (!string.IsNullOrWhiteSpace(upn))
+            {
+                AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Upn;
+            }
+            else if (!string.IsNullOrWhiteSpace(email))
+            {
+                AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Email;
+            }
         }
 
         private static string EnsureTrailingSlash(string value)
