@@ -54,7 +54,7 @@ namespace StickersTemplate.Configuration
                         SecurityTokenValidated = (context) =>
                         {
                             var upnClaim = context?.AuthenticationTicket?.Identity?.Claims?
-                                .FirstOrDefault(c => c.Type == ClaimTypes.Upn);
+                                .FirstOrDefault(c => c.Type == ClaimTypes.Email);
                             var upn = upnClaim?.Value;
 
                             if (upn == null
@@ -77,7 +77,7 @@ namespace StickersTemplate.Configuration
                     }
                 });
 
-            AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Upn;
+            AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Email;
         }
 
         private static string EnsureTrailingSlash(string value)
