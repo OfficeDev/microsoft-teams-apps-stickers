@@ -62,9 +62,11 @@ namespace StickersTemplate.Configuration.Controllers
         /// <summary>
         /// Invalid User
         /// </summary>
+        /// <param name="upn">upn of unauthorized user</param>
         /// <returns>Action Result</returns>
-        public ActionResult InvalidUser()
+        public ActionResult InvalidUser(string upn)
         {
+            this.ViewBag.Upn = upn;
             this.HttpContext.GetOwinContext().Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
             return this.View();
         }
