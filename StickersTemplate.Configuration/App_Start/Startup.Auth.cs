@@ -43,7 +43,11 @@ namespace StickersTemplate.Configuration
                 ?.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                 ?.Select(s => s.Trim())
                 ?? new string[0];
-                app.UseOpenIdConnectAuthentication(
+            var validEmails = ConfigurationManager.AppSettings["ValidEmails"]
+                ?.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                ?.Select(s => s.Trim())
+                ?? new string[0];
+            app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
                     ClientId = clientId,
@@ -58,18 +62,20 @@ namespace StickersTemplate.Configuration
                              var upn = upnClaim?.Value;
 
                             var emailClaim = context?.AuthenticationTicket?.Identity?.Claims?
-                             .FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                                .FirstOrDefault(c => c.Type == ClaimTypes.Email);
                             var email = emailClaim?.Value;
 
                             if (string.IsNullOrWhiteSpace(upn)
                                 || !validUpns.Contains(upn, StringComparer.OrdinalIgnoreCase))
                             {
-                                if (string.IsNullOrWhiteSpace(email))
+                                if (string.IsNullOrWhiteSpace(email)
+                                    || !validEmails.Contains(upn, StringComparer.OrdinalIgnoreCase))
                                 {
                                     context.OwinContext.Response.Redirect("/Account/InvalidUser");
                                     context.HandleResponse(); // Suppress further processing
                                 }
                             }
+
                             return Task.CompletedTask;
                         },
                         RedirectToIdentityProvider = (context) =>
