@@ -59,7 +59,7 @@ namespace StickersTemplate.Configuration
                         {
                             var upnClaim = context?.AuthenticationTicket?.Identity?.Claims?
                                 .FirstOrDefault(c => c.Type == ClaimTypes.Upn);
-                             var upn = upnClaim?.Value;
+                            var upn = upnClaim?.Value;
 
                             var emailClaim = context?.AuthenticationTicket?.Identity?.Claims?
                                 .FirstOrDefault(c => c.Type == ClaimTypes.Email);
