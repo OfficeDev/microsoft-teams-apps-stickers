@@ -43,9 +43,7 @@ namespace StickersTemplate.Configuration
                 ?.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                 ?.Select(s => s.Trim())
                 ?? new string[0];
-            var upn = string.Empty;
-            var email = string.Empty;
-            app.UseOpenIdConnectAuthentication(
+                app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
                     ClientId = clientId,
@@ -57,11 +55,11 @@ namespace StickersTemplate.Configuration
                         {
                             var upnClaim = context?.AuthenticationTicket?.Identity?.Claims?
                                 .FirstOrDefault(c => c.Type == ClaimTypes.Upn);
-                            upn = upnClaim?.Value;
+                             var upn = upnClaim?.Value;
 
                             var emailClaim = context?.AuthenticationTicket?.Identity?.Claims?
-                                .FirstOrDefault(c => c.Type == ClaimTypes.Email);
-                            email = emailClaim?.Value;
+                             .FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                            var email = emailClaim?.Value;
 
                             if (string.IsNullOrWhiteSpace(upn)
                                 || !validUpns.Contains(upn, StringComparer.OrdinalIgnoreCase))
@@ -72,7 +70,6 @@ namespace StickersTemplate.Configuration
                                     context.HandleResponse(); // Suppress further processing
                                 }
                             }
-
                             return Task.CompletedTask;
                         },
                         RedirectToIdentityProvider = (context) =>
@@ -85,14 +82,7 @@ namespace StickersTemplate.Configuration
                         }
                     }
                 });
-            if (!string.IsNullOrWhiteSpace(upn))
-            {
-                AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Upn;
-            }
-            else if (!string.IsNullOrWhiteSpace(email))
-            {
-                AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Email;
-            }
+            AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
         }
 
         private static string EnsureTrailingSlash(string value)
