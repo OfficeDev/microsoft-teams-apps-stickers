@@ -43,10 +43,6 @@ namespace StickersTemplate.Configuration
                 ?.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                 ?.Select(s => s.Trim())
                 ?? new string[0];
-            var validEmails = ConfigurationManager.AppSettings["ValidEmails"]
-                ?.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-                ?.Select(s => s.Trim())
-                ?? new string[0];
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
@@ -59,21 +55,21 @@ namespace StickersTemplate.Configuration
                         {
                             var upnClaim = context?.AuthenticationTicket?.Identity?.Claims?
                                 .FirstOrDefault(c => c.Type == ClaimTypes.Upn);
-                            var upn = upnClaim?.Value;
+                            var upnOrEmail = upnClaim?.Value;
 
-                            var emailClaim = context?.AuthenticationTicket?.Identity?.Claims?
-                                .FirstOrDefault(c => c.Type == ClaimTypes.Email);
-                            var email = emailClaim?.Value;
-
-                            if (string.IsNullOrWhiteSpace(upn)
-                                || !validUpns.Contains(upn, StringComparer.OrdinalIgnoreCase))
+                            // Externally-authenticated users don't have the UPN claim by default. Instead they have email.
+                            if (upnOrEmail == null)
                             {
-                                if (string.IsNullOrWhiteSpace(email)
-                                    || !validEmails.Contains(upn, StringComparer.OrdinalIgnoreCase))
-                                {
-                                    context.OwinContext.Response.Redirect("/Account/InvalidUser");
-                                    context.HandleResponse(); // Suppress further processing
-                                }
+                                var emailClaim = context?.AuthenticationTicket?.Identity?.Claims?
+                                    .FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                                upnOrEmail = emailClaim?.Value;
+                            }
+
+                            if (string.IsNullOrWhiteSpace(upnOrEmail)
+                                || !validUpns.Contains(upnOrEmail, StringComparer.OrdinalIgnoreCase))
+                            {
+                                context.OwinContext.Response.Redirect("/Account/InvalidUser");
+                                context.HandleResponse(); // Suppress further processing
                             }
 
                             return Task.CompletedTask;
@@ -88,6 +84,7 @@ namespace StickersTemplate.Configuration
                         }
                     }
                 });
+
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
         }
 
