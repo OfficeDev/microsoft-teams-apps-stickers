@@ -68,7 +68,7 @@ namespace StickersTemplate.Configuration
                             if (string.IsNullOrWhiteSpace(upnOrEmail)
                                 || !validUpns.Contains(upnOrEmail, StringComparer.OrdinalIgnoreCase))
                             {
-                                context.OwinContext.Response.Redirect("/Account/InvalidUser?upn=" + upn);
+                                context.OwinContext.Response.Redirect("/Account/InvalidUser?upn=" + Uri.EscapeDataString(upnOrEmail));
                                 context.HandleResponse(); // Suppress further processing
                             }
 
