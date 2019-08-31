@@ -55,10 +55,18 @@ namespace StickersTemplate.Configuration
                         {
                             var upnClaim = context?.AuthenticationTicket?.Identity?.Claims?
                                 .FirstOrDefault(c => c.Type == ClaimTypes.Upn);
-                            var upn = upnClaim?.Value;
+                            var upnOrEmail = upnClaim?.Value;
 
-                            if (upn == null
-                                || !validUpns.Contains(upn, StringComparer.OrdinalIgnoreCase))
+                            // Externally-authenticated users don't have the UPN claim by default. Instead they have email.
+                            if (upnOrEmail == null)
+                            {
+                                var emailClaim = context?.AuthenticationTicket?.Identity?.Claims?
+                                    .FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                                upnOrEmail = emailClaim?.Value;
+                            }
+
+                            if (string.IsNullOrWhiteSpace(upnOrEmail)
+                                || !validUpns.Contains(upnOrEmail, StringComparer.OrdinalIgnoreCase))
                             {
                                 context.OwinContext.Response.Redirect("/Account/InvalidUser?upn=" + upn);
                                 context.HandleResponse(); // Suppress further processing
@@ -77,7 +85,7 @@ namespace StickersTemplate.Configuration
                     }
                 });
 
-            AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Upn;
+            AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
         }
 
         private static string EnsureTrailingSlash(string value)
