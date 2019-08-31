@@ -23,11 +23,11 @@ namespace StickersTemplate.Configuration
     /// </summary>
     public partial class Startup
     {
-        private static string clientId = ConfigurationManager.AppSettings["ida:ClientId"];
-        private static string aadInstance = EnsureTrailingSlash(ConfigurationManager.AppSettings["ida:AADInstance"]);
-        private static string tenantId = ConfigurationManager.AppSettings["ida:TenantId"];
-        private static string postLogoutRedirectUri = ConfigurationManager.AppSettings["ida:PostLogoutRedirectUri"];
-        private static string authority = aadInstance + tenantId;
+        private static readonly string ClientId = ConfigurationManager.AppSettings["ida:ClientId"];
+        private static readonly string AadInstance = EnsureTrailingSlash(ConfigurationManager.AppSettings["ida:AADInstance"]);
+        private static readonly string TenantId = ConfigurationManager.AppSettings["ida:TenantId"];
+        private static readonly string PostLogoutRedirectUri = ConfigurationManager.AppSettings["ida:PostLogoutRedirectUri"];
+        private static readonly string Authority = AadInstance + TenantId;
 
         /// <summary>
         /// Configure Auth
@@ -46,9 +46,9 @@ namespace StickersTemplate.Configuration
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
-                    ClientId = clientId,
-                    Authority = authority,
-                    PostLogoutRedirectUri = postLogoutRedirectUri,
+                    ClientId = ClientId,
+                    Authority = Authority,
+                    PostLogoutRedirectUri = PostLogoutRedirectUri,
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
                         SecurityTokenValidated = (context) =>
@@ -68,7 +68,7 @@ namespace StickersTemplate.Configuration
                             if (string.IsNullOrWhiteSpace(upnOrEmail)
                                 || !validUpns.Contains(upnOrEmail, StringComparer.OrdinalIgnoreCase))
                             {
-                                context.OwinContext.Response.Redirect("/Account/InvalidUser");
+                                context.OwinContext.Response.Redirect("/Account/InvalidUser?upn=" + Uri.EscapeDataString(upnOrEmail));
                                 context.HandleResponse(); // Suppress further processing
                             }
 
