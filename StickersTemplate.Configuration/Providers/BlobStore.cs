@@ -71,14 +71,7 @@ namespace StickersTemplate.Configuration.Providers
             var cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
             this.blobContainer = cloudBlobClient.GetContainerReference(containerName);
-            if (await this.blobContainer.CreateIfNotExistsAsync())
-            {
-                BlobContainerPermissions permissions = new BlobContainerPermissions
-                {
-                    PublicAccess = BlobContainerPublicAccessType.Blob
-                };
-                await this.blobContainer.SetPermissionsAsync(permissions);
-            }
+            await this.blobContainer.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Blob, new BlobRequestOptions(), null);
         }
     }
 }
