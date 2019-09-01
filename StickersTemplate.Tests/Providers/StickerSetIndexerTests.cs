@@ -8,25 +8,11 @@ namespace StickersTemplate.Tests.Providers
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.IO;
-    using System.Text;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Azure.WebJobs;
-    using Microsoft.Bot.Connector.Authentication;
-    using Microsoft.Bot.Schema;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Primitives;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
-    using Newtonsoft.Json;
-    using StickersTemplate.Interfaces;
     using StickersTemplate.Models;
-    using StickersTemplate.WebModels;
-
-    using Mutex = System.Threading.Mutex;
     using Task = System.Threading.Tasks.Task;
-    using CancellationToken = System.Threading.CancellationToken;
     using StickersTemplate.Providers;
     using System.Linq;
 

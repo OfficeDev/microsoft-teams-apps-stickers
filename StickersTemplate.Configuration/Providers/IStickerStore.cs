@@ -36,7 +36,7 @@ namespace StickersTemplate.Configuration.Providers
         Task UpdateStickersAsync(IList<Sticker> stickers);
 
         /// <summary>
-        /// Update Sticker Asycn
+        /// Update Sticker Async
         /// </summary>
         /// <param name="sticker">Sticker</param>
         /// <returns>Task</returns>
