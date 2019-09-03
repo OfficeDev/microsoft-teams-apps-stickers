@@ -15,7 +15,7 @@ namespace StickersTemplate.Extensions
     public static class ComposeExtensionValueExtensions
     {
         /// <summary>
-        /// Returns the first and only parameter value from the Compose Extesnion query value or null if one was not present.
+        /// Returns the first and only parameter value from the Compose Extension query value or null if one was not present.
         /// </summary>
         /// <param name="composeExtensionValue">The Compose Extension query value.</param>
         /// <returns>The parameter value if one was present. Null otherwise.</returns>
