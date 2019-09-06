@@ -85,7 +85,7 @@ namespace StickersTemplate.Configuration.Providers
         public Sticker ToSticker()
         {
             StickerState stickerState;
-            if (!Enum.TryParse<StickerState>(this.State, out stickerState))
+            if (!Enum.TryParse(this.State, out stickerState))
             {
                 stickerState = StickerState.Active;
             }
