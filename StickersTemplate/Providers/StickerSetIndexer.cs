@@ -72,7 +72,7 @@ namespace StickersTemplate.Providers
                 if (string.IsNullOrWhiteSpace(query))
                 {
                     var stickers = this.allStickers.Skip(skip).Take(count);
-                    return Task.FromResult<IEnumerable<Sticker>>(stickers);
+                    return Task.FromResult(stickers);
                 }
 
                 var queryWords = query.Trim().ToLowerInvariant().Split(' ');

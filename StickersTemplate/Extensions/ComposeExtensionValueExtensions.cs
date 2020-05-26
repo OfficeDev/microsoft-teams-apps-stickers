@@ -21,7 +21,7 @@ namespace StickersTemplate.Extensions
         /// <returns>The parameter value if one was present. Null otherwise.</returns>
         public static string GetParameterValue(this ComposeExtensionValue composeExtensionValue)
         {
-            if (composeExtensionValue?.Parameters != null && composeExtensionValue.Parameters.Any() && !"initialRun".Equals(composeExtensionValue.Parameters[0].Name))
+            if (composeExtensionValue?.Parameters?.Any(p => p != null && !"initialRun".Equals(p.Name)) ?? false)
             {
                 return composeExtensionValue.Parameters[0].Value;
             }
