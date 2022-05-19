@@ -76,13 +76,20 @@ namespace StickersTemplate.Configuration.Controllers
                 var id = Guid.NewGuid().ToString("D");
                 Uri imageUri;
 
-                // Resize the image to fit within the maximum dimensions
-                using (var memoryStream = new MemoryStream())
+                if (Path.GetExtension(stickerViewModel.File.FileName).ToLower() == ".gif")
                 {
-                    ImageBuilder.Current.Build(stickerViewModel.File, memoryStream, new ResizeSettings($"maxwidth={Sticker.MaximumDimensionInPixels}&maxheight={Sticker.MaximumDimensionInPixels}"));
-                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    imageUri = await this.blobStore.UploadBlobAsync(id, stickerViewModel.File.InputStream);
+                }
+                else
+                {
+                    // Resize the image to fit within the maximum dimensions
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        ImageBuilder.Current.Build(stickerViewModel.File, memoryStream, new ResizeSettings($"maxwidth={Sticker.MaximumDimensionInPixels}&maxheight={Sticker.MaximumDimensionInPixels}"));
+                        memoryStream.Seek(0, SeekOrigin.Begin);
 
-                    imageUri = await this.blobStore.UploadBlobAsync(id, memoryStream);
+                        imageUri = await this.blobStore.UploadBlobAsync(id, memoryStream);
+                    }
                 }
 
                 await this.stickerStore.CreateStickerAsync(new Sticker
