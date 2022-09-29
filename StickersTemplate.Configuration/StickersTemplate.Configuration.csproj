@@ -15,7 +15,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>StickersTemplate.Configuration</RootNamespace>
     <AssemblyName>StickersTemplate.Configuration</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
@@ -28,6 +28,7 @@
     </NuGetPackageImportStamp>
     <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
     <LangVersion>6</LangVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -128,6 +129,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.5.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
@@ -143,8 +145,7 @@
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
@@ -163,9 +164,7 @@
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
@@ -183,6 +182,7 @@
     <Reference Include="System.Web.Optimization">
       <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
@@ -242,8 +242,134 @@
     <Content Include="lib\bootstrap\dist\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="lib\bootstrap\dist\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="lib\bootstrap\dist\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="lib\jquery-validate\additional-methods.js" />
+    <Content Include="lib\jquery-validate\additional-methods.min.js" />
     <Content Include="lib\jquery-validate\jquery.validate.js" />
     <Content Include="lib\jquery-validate\jquery.validate.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ar.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ar.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_az.js" />
+    <Content Include="lib\jquery-validate\localization\messages_az.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_bg.js" />
+    <Content Include="lib\jquery-validate\localization\messages_bg.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_bn_BD.js" />
+    <Content Include="lib\jquery-validate\localization\messages_bn_BD.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ca.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ca.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_cs.js" />
+    <Content Include="lib\jquery-validate\localization\messages_cs.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_da.js" />
+    <Content Include="lib\jquery-validate\localization\messages_da.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_de.js" />
+    <Content Include="lib\jquery-validate\localization\messages_de.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_el.js" />
+    <Content Include="lib\jquery-validate\localization\messages_el.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_es.js" />
+    <Content Include="lib\jquery-validate\localization\messages_es.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_es_AR.js" />
+    <Content Include="lib\jquery-validate\localization\messages_es_AR.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_es_PE.js" />
+    <Content Include="lib\jquery-validate\localization\messages_es_PE.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_et.js" />
+    <Content Include="lib\jquery-validate\localization\messages_et.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_eu.js" />
+    <Content Include="lib\jquery-validate\localization\messages_eu.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_fa.js" />
+    <Content Include="lib\jquery-validate\localization\messages_fa.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_fi.js" />
+    <Content Include="lib\jquery-validate\localization\messages_fi.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_fr.js" />
+    <Content Include="lib\jquery-validate\localization\messages_fr.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ge.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ge.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_gl.js" />
+    <Content Include="lib\jquery-validate\localization\messages_gl.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_he.js" />
+    <Content Include="lib\jquery-validate\localization\messages_he.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_hr.js" />
+    <Content Include="lib\jquery-validate\localization\messages_hr.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_hu.js" />
+    <Content Include="lib\jquery-validate\localization\messages_hu.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_hy_AM.js" />
+    <Content Include="lib\jquery-validate\localization\messages_hy_AM.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_id.js" />
+    <Content Include="lib\jquery-validate\localization\messages_id.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_is.js" />
+    <Content Include="lib\jquery-validate\localization\messages_is.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_it.js" />
+    <Content Include="lib\jquery-validate\localization\messages_it.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ja.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ja.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ka.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ka.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_kk.js" />
+    <Content Include="lib\jquery-validate\localization\messages_kk.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ko.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ko.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_lt.js" />
+    <Content Include="lib\jquery-validate\localization\messages_lt.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_lv.js" />
+    <Content Include="lib\jquery-validate\localization\messages_lv.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_mk.js" />
+    <Content Include="lib\jquery-validate\localization\messages_mk.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_my.js" />
+    <Content Include="lib\jquery-validate\localization\messages_my.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_nl.js" />
+    <Content Include="lib\jquery-validate\localization\messages_nl.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_no.js" />
+    <Content Include="lib\jquery-validate\localization\messages_no.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_pl.js" />
+    <Content Include="lib\jquery-validate\localization\messages_pl.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_pt_BR.js" />
+    <Content Include="lib\jquery-validate\localization\messages_pt_BR.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_pt_PT.js" />
+    <Content Include="lib\jquery-validate\localization\messages_pt_PT.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ro.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ro.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ru.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ru.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sd.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sd.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_si.js" />
+    <Content Include="lib\jquery-validate\localization\messages_si.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sk.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sk.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sl.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sl.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sr.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sr.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sr_lat.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sr_lat.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sv.js" />
+    <Content Include="lib\jquery-validate\localization\messages_sv.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_th.js" />
+    <Content Include="lib\jquery-validate\localization\messages_th.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_tj.js" />
+    <Content Include="lib\jquery-validate\localization\messages_tj.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_tr.js" />
+    <Content Include="lib\jquery-validate\localization\messages_tr.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_uk.js" />
+    <Content Include="lib\jquery-validate\localization\messages_uk.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ur.js" />
+    <Content Include="lib\jquery-validate\localization\messages_ur.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_vi.js" />
+    <Content Include="lib\jquery-validate\localization\messages_vi.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_zh.js" />
+    <Content Include="lib\jquery-validate\localization\messages_zh.min.js" />
+    <Content Include="lib\jquery-validate\localization\messages_zh_TW.js" />
+    <Content Include="lib\jquery-validate\localization\messages_zh_TW.min.js" />
+    <Content Include="lib\jquery-validate\localization\methods_de.js" />
+    <Content Include="lib\jquery-validate\localization\methods_de.min.js" />
+    <Content Include="lib\jquery-validate\localization\methods_es_CL.js" />
+    <Content Include="lib\jquery-validate\localization\methods_es_CL.min.js" />
+    <Content Include="lib\jquery-validate\localization\methods_fi.js" />
+    <Content Include="lib\jquery-validate\localization\methods_fi.min.js" />
+    <Content Include="lib\jquery-validate\localization\methods_it.js" />
+    <Content Include="lib\jquery-validate\localization\methods_it.min.js" />
+    <Content Include="lib\jquery-validate\localization\methods_nl.js" />
+    <Content Include="lib\jquery-validate\localization\methods_nl.min.js" />
+    <Content Include="lib\jquery-validate\localization\methods_pt.js" />
+    <Content Include="lib\jquery-validate\localization\methods_pt.min.js" />
     <Content Include="lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js" />
     <Content Include="lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js" />
     <Content Include="lib\jquery\jquery.min.map" />
@@ -284,6 +410,7 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="lib\jquery-validate\jquery-validation-sri.json" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\stickersdeploytest1-config - Web Deploy.pubxml" />
   </ItemGroup>
