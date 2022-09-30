@@ -170,8 +170,8 @@ namespace StickersTemplate
                     {
                         Type = "result",
                         AttachmentLayout = "grid",
-                        Attachments = stickers.Select(sticker => new StickerComposeExtensionCard(sticker).ToAttachment()).ToArray()
-                    }
+                        Attachments = stickers.Select(sticker => new StickerComposeExtensionCard(sticker).ToAttachment()).ToArray(),
+                    },
                 };
 
                 return new OkObjectResult(result);
@@ -238,7 +238,7 @@ namespace StickersTemplate
                 { "TeamId", channelData?["team"]?["id"]?.ToString() },
                 { "SourceName", channelData?["source"]?["name"]?.ToString() },
                 { "Locale", clientInfoEntity?.Properties["locale"]?.ToString() },
-                { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() }
+                { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() },
             };
             this.telemetryClient.TrackEvent("UserActivity", properties);
         }
