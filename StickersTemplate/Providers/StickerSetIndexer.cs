@@ -71,7 +71,7 @@ namespace StickersTemplate.Providers
             {
                 if (string.IsNullOrWhiteSpace(query))
                 {
-                    var stickers = this.allStickers.Skip(skip).Take(count);
+                    var stickers = this.allStickers.Skip(skip);//.Take(count);
                     return Task.FromResult(stickers);
                 }
 
@@ -82,8 +82,9 @@ namespace StickersTemplate.Providers
                     .SelectMany((keyValuePair) => keyValuePair.Value)
                     .Distinct()
                     .Skip(skip)
-                    .Take(count)
                     .ToArray();
+                    //.Take(count)
+                    //.ToArray();
 
                 return Task.FromResult<IEnumerable<Sticker>>(matchedStickers);
             }
