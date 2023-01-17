@@ -65,13 +65,13 @@ namespace StickersTemplate.Providers
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<Sticker>> FindStickersByQuery(string query, int skip = 0, int count = 25, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IEnumerable<Sticker>> FindStickersByQuery(string query, int skip = 0,CancellationToken cancellationToken = default(CancellationToken))
         {
             using (var scope = this.logger.BeginScope($"{nameof(StickerSetIndexer)}.{nameof(this.FindStickersByQuery)}"))
             {
                 if (string.IsNullOrWhiteSpace(query))
                 {
-                    var stickers = this.allStickers.Skip(skip).Take(count);
+                    var stickers = this.allStickers.Skip(skip);
                     return Task.FromResult(stickers);
                 }
 
@@ -82,8 +82,8 @@ namespace StickersTemplate.Providers
                     .SelectMany((keyValuePair) => keyValuePair.Value)
                     .Distinct()
                     .Skip(skip)
-                    .Take(count)
                     .ToArray();
+                  
 
                 return Task.FromResult<IEnumerable<Sticker>>(matchedStickers);
             }

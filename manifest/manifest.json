@@ -1,48 +1,48 @@
 {
-    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.3/MicrosoftTeams.schema.json",
-    "manifestVersion": "1.3",
-    "version": "1.0.0",
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.14/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.14",
+    "version": "1.0",
     "id": "f1bc95ac-b991-4cd0-9ce5-7e4a70f4339b",
-    "packageName": "com.microsoft.teams.stickers",
-    "developer": {
-        "name": "<company name>",
-        "websiteUrl": "<website url>",
-        "privacyUrl": "<privacy url>",
-        "termsOfUseUrl": "<terms of use url>"
-    },
-    "icons": {
-        "color": "color.png",
-        "outline": "outline.png"
-    },
-    "name": {
-        "short": "Stickers!"
-    },
-    "description": {
-        "short": "The awesome Stickers app enhances messaging in Microsoft Teams!",
-        "full": "The awesome Stickers app comes to enhance your Microsoft Teams messaging experience with a new and amazing palette of stickers!"
-    },
-    "accentColor": "#FFFFFF",
+    "packageName": "com.microsoft.teams.samples.searchExtension",
+   "developer": {
+          "name": "Luis Demetrio",
+          "websiteUrl": "https://www.microsoft.com",
+          "privacyUrl": "https://www.microsoft.com",
+          "termsOfUseUrl": "https://www.microsoft.com"
+      },
+      "icons": {
+          "color": "color.png",
+          "outline": "outline.png"
+      },
+      "name": {
+          "short": "MyStickers!"
+      },
+      "description": {
+          "short": "The awesome Stickers app enhances messaging in Microsoft Teams!",
+          "full": "The awesome Stickers app comes to enhance your Microsoft Teams messaging experience with a new and amazing palette of stickers!"
+      },
+      "accentColor": "#FFFFFF",
     "composeExtensions": [
-        {
-            "botId": "<bot id>",
-            "canUpdateConfiguration": false,
-            "commands": [
-                {
-                    "id": "Search",
-                    "title": "Search",
-                    "description": "",
-                    "initialRun": true,
-                    "parameters": [
-                        {
-                            "name": "keyword",
-                            "title": "keyword",
-                            "description": "search for a sticker"
-                        }
-                    ]
-                }
+      {
+        "botId": "4e992e2b-df8a-43aa-b9db-5c122daef085",
+        "canUpdateConfiguration": true,
+        "commands": [
+          {
+            "id": "search",
+            "context": [ "compose", "commandBox" ],
+            "description": "Test command to run query",
+            "title": "Search",
+            "type": "query",
+            "parameters": [
+              {
+                "name": "keyword",
+                "title": "keyword",
+                "description": "search for a sticker"
+              }
             ]
-        }
-    ],
-    "permissions": [],
-    "validDomains": []
-}
+          }
+        ]
+      }
+    ]
+  }
+  

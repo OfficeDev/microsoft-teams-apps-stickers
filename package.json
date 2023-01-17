@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "jquery-validate": "^2.0.0",
+    "modernizr": "^3.12.0"
+  }
+}
