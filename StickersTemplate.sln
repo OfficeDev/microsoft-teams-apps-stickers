@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.32804.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StickersTemplate", "StickersTemplate\StickersTemplate.csproj", "{DE0FAB3D-7C99-401F-8151-6677B01AEE0B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StickersTemplate.Tests", "StickersTemplate.Tests\StickersTemplate.Tests.csproj", "{E31D696B-F67C-4C9E-9328-98B0ABEE0B03}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StickersTemplate.Configuration", "StickersTemplate.Configuration\StickersTemplate.Configuration.csproj", "{932458EF-54A4-4BC9-8C43-BA89C0634190}"
 EndProject
@@ -13,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployment", "deployment", 
 	ProjectSection(SolutionItems) = preProject
 		deployment\azuredeploy.json = deployment\azuredeploy.json
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StickersTemplate.Tests", "StickersTemplate.Tests\StickersTemplate.Tests.csproj", "{AAD6993B-B7C7-42DA-BDF1-6563341A7ABD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,14 +24,14 @@ Global
 		{DE0FAB3D-7C99-401F-8151-6677B01AEE0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE0FAB3D-7C99-401F-8151-6677B01AEE0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE0FAB3D-7C99-401F-8151-6677B01AEE0B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E31D696B-F67C-4C9E-9328-98B0ABEE0B03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E31D696B-F67C-4C9E-9328-98B0ABEE0B03}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E31D696B-F67C-4C9E-9328-98B0ABEE0B03}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E31D696B-F67C-4C9E-9328-98B0ABEE0B03}.Release|Any CPU.Build.0 = Release|Any CPU
 		{932458EF-54A4-4BC9-8C43-BA89C0634190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{932458EF-54A4-4BC9-8C43-BA89C0634190}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{932458EF-54A4-4BC9-8C43-BA89C0634190}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{932458EF-54A4-4BC9-8C43-BA89C0634190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAD6993B-B7C7-42DA-BDF1-6563341A7ABD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAD6993B-B7C7-42DA-BDF1-6563341A7ABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAD6993B-B7C7-42DA-BDF1-6563341A7ABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAD6993B-B7C7-42DA-BDF1-6563341A7ABD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

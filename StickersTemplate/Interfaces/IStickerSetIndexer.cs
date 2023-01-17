@@ -29,9 +29,8 @@ namespace StickersTemplate.Interfaces
         /// </summary>
         /// <param name="query">The input query.</param>
         /// <param name="skip">How many stickers to skip; useful for pagination.</param>
-        /// <param name="count">How many stickers to return; useful for pagination.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
         /// <returns>A non-duplicate set of <see cref="Sticker"/> objects.</returns>
-        Task<IEnumerable<Sticker>> FindStickersByQuery(string query, int skip = 0, int count = 25, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IEnumerable<Sticker>> FindStickersByQuery(string query, int skip = 0, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
